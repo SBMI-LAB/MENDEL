@@ -1,0 +1,468 @@
+import bpy
+from math import radians
+import math
+
+
+class HelixRod():
+    
+    currentRod = 0
+    ispair = True
+    row = []
+    
+    y = 0
+    z = 0
+    
+    #### Interaction with other Helix Rods:
+    ###
+    ##           YN
+    ##      ZN  This   ZP
+    ##           YP
+    ##
+    
+    YP = None
+    YN = None
+    ZP = None
+    ZN = None
+    
+    YPS = None
+    YNS = None
+    ZPS = None
+    ZNS = None
+    
+    YPSa = None
+    YNSa = None
+    ZPSa = None
+    ZNSa = None   
+    
+    maxStaple = 0 
+    
+    def getYPS(this):
+        return this.YNS
+    def getYNS(this):
+        return this.YPS
+    def getZPS(this):
+        return this.ZNS
+    def getZNS(this):
+        return this.ZPS
+        
+    def getYPSa(this):
+        return this.YNSa
+    def getYNSa(this):
+        return this.YPSa
+    def getZPSa(this):
+        return this.ZNSa
+    def getZNSa(this):
+        return this.ZPSa  
+    
+    
+    def setStaple(this, pos, OtherHelix):
+        # ~ print("Adding: " + str(pos));
+        
+        
+        if OtherHelix == this.YN:
+            this.YNS.append(pos)
+            # ~ print("YNS")
+        if OtherHelix == this.ZP:
+            this.ZPS.append(pos)
+            # ~ print("ZPS")
+        if OtherHelix == this.ZN:
+            this.ZNS.append(pos)
+            # ~ print("ZNS")
+        if OtherHelix == this.YP:
+            this.YPS.append(pos)
+            # ~ print("YPS")            
+            
+        
+        this.maxStaple += 1  
+        
+        # ~ print (this.YPS)
+        # ~ print (this.YNS)
+        
+        
+        # ~ print ( str(this.currentRod) + ") YPS: " +  str(len(this.YPS)) + ", YNS: "+ str(len(this.YNS))  +" out of : " + str(this.maxStaple) )
+        # ~ print(this.YNS)
+          
+    
+    def getStapleListBP (this):
+        ### Generate List of BP for staples
+        Lista = []
+        
+        for k in this.YNS:
+            if k != -1:
+                BP1 = this.row[k]
+                BP2 = this.YN.getRow()[k]
+                P = (BP1, BP2)
+                Lista.append(P)
+        for k in this.YPS:
+            if k != -1:
+                BP1 = this.row[k]
+                BP2 = this.YP.getRow()[k]
+                P = (BP1, BP2)
+                Lista.append(P)
+        for k in this.ZNS:
+            if k != -1:
+                BP1 = this.row[k]
+                BP2 = this.ZN.getRow()[k]
+                P = (BP1, BP2)
+                Lista.append(P)
+        for k in this.ZPS:
+            if k != -1:
+                BP1 = this.row[k]
+                BP2 = this.ZP.getRow()[k]
+                P = (BP1, BP2)
+                Lista.append(P)                                   
+                
+        return Lista
+    
+    def analyzeStaple(this):
+        ### It's a function that analyzes the staples and take a decision
+        ### To approve or remove staple
+        
+        
+        
+        
+        if this.YNS == None:
+            this.YNS = []
+        if this.YPS == None:
+            this.YPS = []
+            
+        if this.ZNS == None:
+            this.ZNS = []
+        if this.ZPS == None:
+            this.ZPS = []
+            
+        YNS = this.YNS
+        YPS = this.YPS
+        ZNS = this.ZNS
+        ZPS = this.ZPS            
+            
+        
+        print(len(YPS))
+        
+        maxim = max(len(YNS),len(YPS),len(ZNS),len(ZPS))
+        print ("Maximo: " + str(maxim) + " out of " + str(this.maxStaple))
+        
+        ### Analize all of them
+        
+        ### Recorrer la helice item por item, incremental.
+        ### Tomar en cuenta de la distancia del ultimo elemento agregado.
+        ### Dar una opcion de aprobación o desaprobación (sumar y restar)
+        ### Finalmente dar la decisión en otra estructura después del análisis
+        
+        pYN = -1
+        pYP = -1
+        pZN = -1
+        pZP = -1
+        
+        mYN = -1
+        mYP = -1
+        mZN = -1
+        mZP = -1
+        
+        MinDistance = 7
+        
+        Low = 4
+        
+        DYN = 0
+        DYP = 0
+        
+        for k in range (1,maxim):
+            
+            ### YNS
+            if k < len(this.YNS) :
+                if k == 1:
+                    pYN = this.YNS[0]
+                    mYN = this.YNS[-1]
+                
+                pD = DYN
+                DYN = abs(this.YNS[k] - pYN)
+                pYN = this.YNS[k]
+                DF = abs (mYN - this.YNS[k])
+                
+                D1 = abs(pYN - pYP)
+                D2 = abs(pYN - pZN)
+                D3 = abs(pYN - pZP)
+                
+                Cal = 0
+                
+                if DYN > MinDistance:
+                    Cal +=1
+                if pD > 2*MinDistance:
+                    Cal += 2
+                
+                if DF > MinDistance: 
+                    Cal += 1
+                else:
+                    Cal -= 2
+                    
+                if D1 < Low or D2 < Low or D3 < Low:
+                    Cal -= 2
+                
+                if len(this.YNSa) < k+1:
+                    this.YNSa.append(Cal)
+                else:
+                    this.YNSa[k] += Cal
+
+            ### YPS
+            if k < len(this.YPS) :
+                if k == 1:
+                    pYP = this.YPS[0]
+                    mYP = this.YPS[-1]
+                
+                pD = DYP
+                DYP = abs(this.YPS[k] - pYP)
+                pYP = this.YPS[k]
+                DF = abs (mYP - this.YPS[k])
+                
+                D1 = abs(pYN - pYP)
+                D2 = abs(pYP - pZN)
+                D3 = abs(pYP - pZP)
+                
+                
+                Cal = 0
+                if DYP > MinDistance:
+                    Cal +=1
+                if pD > 2*MinDistance:
+                    Cal += 2
+                
+                if DF > MinDistance: 
+                    Cal += 1
+                else:
+                    Cal -= 2   
+                
+                if D1 < Low or D2 < Low or D3 < Low:
+                    Cal -= 2
+                
+                # ~ this.YPSa.append(Cal)
+                if len(this.YPSa) < k+1:
+                    this.YPSa.append(Cal)
+                else:
+                    this.YPSa[k] += Cal
+                
+            ### ZNS
+            if k < len(this.ZNS) :
+                if k == 1:
+                    pZN = this.ZNS[0]
+                    mZN = this.ZNS[-1]
+                
+                pD = DZN
+                DZN = abs(this.ZNS[k] - pZN)
+                pZN = this.ZNS[k]
+                DF = abs (mZN - this.ZNS[k])
+                
+                D1 = abs(pZN - pZP)
+                D2 = abs(pZN - pZN)
+                D3 = abs(pZN - pZP)
+                
+                Cal = 0
+                
+                if DZN > MinDistance:
+                    Cal +=1
+                if pD > 2*MinDistance:
+                    Cal += 2
+                
+                if DF > MinDistance: 
+                    Cal += 1
+                else:
+                    Cal -= 2
+                    
+                if D1 < Low or D2 < Low or D3 < Low:
+                    Cal -= 2
+                
+                # ~ this.ZNSa.append(Cal)
+                if len(this.ZNSa) < k+1:
+                    this.ZNSa.append(Cal)
+                else:
+                    this.ZNSa[k] += Cal
+                
+            ### ZPS
+            if k < len(this.ZPS) :
+                if k == 1:
+                    pZP = this.ZPS[0]
+                    mZP = this.ZPS[-1]
+                
+                pD = DZP
+                DZP = abs(this.ZPS[k] - pZP)
+                pZP = this.ZPS[k]
+                DF = abs (mZP - this.ZPS[k])
+                
+                D1 = abs(pZN - pZP)
+                D2 = abs(pZP - pZN)
+                D3 = abs(pZP - pZP)
+                
+                
+                Cal = 0
+                if DZP > MinDistance:
+                    Cal +=1
+                if pD > 2*MinDistance:
+                    Cal += 2
+                
+                if DF > MinDistance: 
+                    Cal += 1
+                else:
+                    Cal -= 2   
+                
+                if D1 < Low or D2 < Low or D3 < Low:
+                    Cal -= 2
+                
+                # ~ this.ZPSa.append(Cal)   
+                if len(this.ZPSa) < k+1:
+                    this.ZPSa.append(Cal)
+                else:
+                    this.ZPSa[k] += Cal             
+        
+        # ~ print ( "YPSA: " + str(len(this.YPSa)))
+        # ~ this.analyzeStapleHelix(this.YN, this.YNS, this.YNSa)
+        # ~ this.analyzeStapleHelix(this.YP, this.YPS, this.YPSa)
+        # ~ this.analyzeStapleHelix(this.ZN, this.ZNS, this.ZNSa)
+        # ~ this.analyzeStapleHelix(this.ZP, this.ZPS, this.ZPSa)        
+        
+    
+    # ~ def analyzeStapleHelix(this, Helix, Lista, Approval):
+        # ~ ### check each list and decide which elements are accepted or not
+        # ~ dist = []
+        
+        # ~ if len(Lista) > 0:
+            # ~ pK = Lista[0]
+            # ~ for k in range (1, len(Lista)):
+                # ~ d = abs(Lista[k] - pK)
+                # ~ dist.append(d)
+                
+    def checkApprobal(this, lista, objeto):
+        if len(lista) > 0:
+            maximum = max(lista)
+            print("Max contest: " + str(maximum))
+            
+            for k in range(0,len(lista)):
+                if lista[k] < maximum :
+                    objeto[k] = -1
+            
+            print(objeto)
+            print(lista)
+            print("Lista: " + str(len(lista)) + "   Objeto: " + str(len(objeto)))
+
+    def approbalStaple(this):
+        ### This is executed after the first round and set the qualifications
+        
+        this.checkApprobal(this.YNSa,this.YNS)
+        this.checkApprobal(this.YPSa,this.YPS)
+        this.checkApprobal(this.ZNSa, this.ZNS)
+        this.checkApprobal(this.ZPSa, this.ZPS)
+        
+            
+        
+    
+    
+    def setRelation(this, OtherHelix):
+        ### Be careful, check 
+        if this.YNSa == None:
+            this.YNSa = []
+        if this.YPSa == None:
+            this.YPSa = []
+        if this.ZNSa == None:
+            this.ZNSa = []
+        if this.ZPSa == None:
+            this.ZPSa = []
+        
+        
+        if this != OtherHelix :
+            
+            print("Creating relationship")
+            
+            
+            y = OtherHelix.getY()
+            z = OtherHelix.getZ()
+            
+            if y-this.y == 1 and z == this.z :
+                this.YP = OtherHelix
+                print("YPS")
+                if this.YPS == None:
+                    if this.YP.getYPS() == None:
+                        this.YPS = []
+                    else:
+                        this.YPS = this.YP.getYPS()
+                        this.YPSa = this.YP.getYPSa()
+                    
+                 
+            if this.y - y == 1 and z == this.z:
+                this.YN = OtherHelix
+                print("YNS")
+                if this.YNS == None:
+                    if this.YN.getYNS() == None:
+                        this.YNS = []
+                    else:
+                        this.YNS = this.YN.getYNS()     
+                        this.YNSa = this.YN.getYNSa()     
+                                   
+            
+            
+            if z - this.z == 1 and y == this.y:
+                this.ZP = OtherHelix
+                if this.ZPS == None:
+                    if this.ZP.getZPS() == None:
+                        this.ZPS = []
+                    else:
+                        this.ZPS = this.ZP.getZPS()
+                        this.ZPSa = this.ZP.getZPSa()
+                # ~ if len (this.ZPS) == 0:
+                    # ~ this.ZPS = this.ZP.getZPS()
+            
+            if this.z - z == 1 and y == this.y:
+                this.ZN = OtherHelix
+                if this.ZNS == None:
+                    if this.ZN.getZNS() == None:
+                        this.ZNS = []
+                    else:
+                        this.ZNS = this.ZN.getZNS()  
+                        this.ZNSa = this.ZN.getZNSa()  
+                # ~ if len (this.ZNS) == 0:
+                    # ~ this.ZNS = this.ZN.getZNS()
+    
+        
+    
+    
+    def getY(this):
+        return this.y
+    
+    def getZ(this):
+        return this.z
+    
+    def getNumber(this):
+        return this.currentRod
+    
+    def setRodN(this,n):
+        this.currentRod = n
+        this.isEmpty()
+        #print("Rod: " + str(n) + " Pair: " + str(this.ispair) )
+    
+    def isEmpty(this):
+        empty = True
+        for BP in this.row:
+            if type(BP) != type([]):
+                empty = False
+                BP.setR(this.currentRod)
+
+        return empty
+    
+    def getRow(this):
+        return this.row
+    
+    def setRow(this, nrow):
+        this.row = nrow
+    
+    
+    def config(this,y,z):
+        p1 = y+z
+
+        this.y = y
+        this.z = z
+
+        if p1/2 == round(p1/2):
+            this.ispair = True
+        else:
+            this.ispair = False    
+
+    def isPair(this):
+        return this.ispair
+
+
