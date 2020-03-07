@@ -19,6 +19,7 @@ class HelixRod():
     ##           YP
     ##
     
+    
     YP = None
     YN = None
     ZP = None
@@ -165,10 +166,14 @@ class HelixRod():
         
         DYN = 0
         DYP = 0
+        DZP = 0
+        DZN = 0
+        
         
         for k in range (1,maxim):
             
             ### YNS
+            """
             if k < len(this.YNS) :
                 if k == 1:
                     pYN = this.YNS[0]
@@ -276,57 +281,100 @@ class HelixRod():
                     this.ZNSa[k] += Cal
                 
             ### ZPS
-            if k < len(this.ZPS) :
-                if k == 1:
-                    pZP = this.ZPS[0]
-                    mZP = this.ZPS[-1]
+            # ~ if k < len(this.ZPS) :
+                # ~ if k == 1:
+                    # ~ pZP = this.ZPS[0]
+                    # ~ mZP = this.ZPS[-1]
                 
-                pD = DZP
-                DZP = abs(this.ZPS[k] - pZP)
-                pZP = this.ZPS[k]
-                DF = abs (mZP - this.ZPS[k])
+                # ~ pD = DZP
+                # ~ DZP = abs(this.ZPS[k] - pZP)
+                # ~ pZP = this.ZPS[k]
+                # ~ DF = abs (mZP - this.ZPS[k])
                 
-                D1 = abs(pZN - pZP)
-                D2 = abs(pZP - pZN)
-                D3 = abs(pZP - pZP)
+                # ~ D1 = abs(pZN - pZP)
+                # ~ D2 = abs(pZP - pZN)
+                # ~ D3 = abs(pZP - pZP)
                 
                 
-                Cal = 0
-                if DZP > MinDistance:
-                    Cal +=1
-                if pD > 2*MinDistance:
-                    Cal += 2
+                # ~ Cal = 0
+                # ~ if DZP > MinDistance:
+                    # ~ Cal +=1
+                # ~ if pD > 2*MinDistance:
+                    # ~ Cal += 2
                 
-                if DF > MinDistance: 
-                    Cal += 1
-                else:
-                    Cal -= 2   
+                # ~ if DF > MinDistance: 
+                    # ~ Cal += 1
+                # ~ else:
+                    # ~ Cal -= 2   
                 
-                if D1 < Low or D2 < Low or D3 < Low:
-                    Cal -= 2
+                # ~ if D1 < Low or D2 < Low or D3 < Low:
+                    # ~ Cal -= 2
                 
-                # ~ this.ZPSa.append(Cal)   
-                if len(this.ZPSa) < k+1:
-                    this.ZPSa.append(Cal)
-                else:
-                    this.ZPSa[k] += Cal             
+                
+                # ~ if len(this.ZPSa) < k+1:
+                    # ~ this.ZPSa.append(Cal)
+                # ~ else:
+                    # ~ this.ZPSa[k] += Cal   
+            """
+            
+            pYN = this.analyzeRod(k,this.YNS, this.YNSa, DYN, pYP, pZP, pZN)
+            pYP = this.analyzeRod(k,this.YPS, this.YPSa, DYP, pYN, pZP, pZN)
+            pZN = this.analyzeRod(k,this.ZNS, this.ZNSa, DZN, pYN, pZP, pYP)
+            pZP = this.analyzeRod(k,this.ZPS, this.ZPSa, DZP, pYN, pYP, pZN)
+                            
         
-        # ~ print ( "YPSA: " + str(len(this.YPSa)))
-        # ~ this.analyzeStapleHelix(this.YN, this.YNS, this.YNSa)
-        # ~ this.analyzeStapleHelix(this.YP, this.YPS, this.YPSa)
-        # ~ this.analyzeStapleHelix(this.ZN, this.ZNS, this.ZNSa)
-        # ~ this.analyzeStapleHelix(this.ZP, this.ZPS, this.ZPSa)        
+    def analyzeRod(this, k, ZPS, ZPSa, DZP, D1,D2,D3):
         
-    
-    # ~ def analyzeStapleHelix(this, Helix, Lista, Approval):
-        # ~ ### check each list and decide which elements are accepted or not
-        # ~ dist = []
+        MinDistance = 20
+        RealMin = 7
+        Low = 4
         
-        # ~ if len(Lista) > 0:
-            # ~ pK = Lista[0]
-            # ~ for k in range (1, len(Lista)):
-                # ~ d = abs(Lista[k] - pK)
-                # ~ dist.append(d)
+        pZP = -1
+        
+        if k < len(ZPS) :
+            pZP = ZPS[0]    ### First staple
+            mZP = ZPS[-1]   ### Last staple
+            
+            pD = DZP                    ## Distance of previous staple
+            DZP = abs(ZPS[k] - pZP)     ## Distance from the first edge
+            pZP = ZPS[k]                ##  Update position for returning values        
+            DF = abs (mZP - ZPS[k])     ##  Distance from the last edge
+            
+            D1 = abs(pZP - D1)
+            D2 = abs(pZP - D2)
+            D3 = abs(pZP - D3)
+            
+            
+            Cal = 0
+            if DZP > MinDistance:
+                Cal +=1
+            else:
+                Cal -= 2
+                
+            if DZP < RealMin: 
+                Cal -= 5
+            
+            if pD > MinDistance:
+                Cal += 2
+            
+            if DF > MinDistance: 
+                Cal += 1
+            else:
+                Cal -= 2   
+            
+            if D1 < Low or D2 < Low or D3 < Low:
+                Cal -= 2
+            else:
+                Cal += 1
+  
+            if len(ZPSa) < k+1:
+                ZPSa.append(Cal)
+            else:
+                ZPSa[k] += Cal  
+            
+        return pZP
+            
+          
                 
     def checkApprobal(this, lista, objeto):
         if len(lista) > 0:

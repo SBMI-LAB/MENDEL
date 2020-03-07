@@ -21,6 +21,10 @@ exec(compile(open(filepath).read(), filepath, 'exec'))
 filepath = bpy.path.abspath("//ExportCad.py")
 exec(compile(open(filepath).read(), filepath, 'exec'))
 
+filepath = bpy.path.abspath("//HelixRod.py")
+exec(compile(open(filepath).read(), filepath, 'exec'))
+
+
 
 class Cadnano():
     
@@ -377,6 +381,9 @@ class Cadnano():
         sal.setLast(this.prevBP)
         
         sal.buildRods()
+        
+        sal.AnalyzeStaples()
+        # ~ sal.AnalyzeStaplesOld()
         
         sal.writeFile(filename)
         
