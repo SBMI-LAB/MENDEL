@@ -1,4 +1,3 @@
-
 import bpy
 from mathutils import Vector
 from time import sleep
