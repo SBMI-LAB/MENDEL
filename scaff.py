@@ -21,6 +21,8 @@ class Scaff():
     PrevStp = None
     NextStp = None
     
+    StapleObj = None
+    
     x, y, z = 0,0,0
 
     sx,sy, sz = 0,0,0
@@ -37,7 +39,18 @@ class Scaff():
     
     rodnumber = 0
     posinrod = 0
+    
+    # ~ asigned = 0
 
+
+    def setStaple(this, staple):
+        this.StapleObj = staple
+        # ~ print("A:  " + str(this.rodnumber) + ": " + str(this.x))
+        # ~ this.asigned += 1
+        # ~ print("Asigned: " + str(this.asigned))
+    
+    def getStaple(this):
+        return this.StapleObj
 
     def updateElements(this):
 

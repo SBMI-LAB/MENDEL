@@ -15,6 +15,8 @@ class ExportCad():
     
     Helices = []
     
+    StapleList = []
+    
     maxPosition = 0
 
     tailLen = 20
@@ -520,13 +522,17 @@ class ExportCad():
                                         # ~ StapleB1.append(BP)
                                         # ~ StapleB2.append(BP2)
                                         # ~ StapleRod.append(Rod)
-                                        Row1.setStaple(x,Row2)
+                                        
+                                        # ~ Row1.setStaple(x,Row2)
+                                        TT = Row1.setStapleNew(x,Row2)
+                                        if TT != False:
+                                            this.StapleList.append( TT )
             
             # ~ print ("Next")
             # ~ this.DecideStaples(StapleLoc,StapleB1, StapleB2, StapleRod)                            
   
                         
-        
+        """
         for Row in this.Helices :
             if Row.isEmpty() == False:
                 Row.analyzeStaple()
@@ -540,8 +546,6 @@ class ExportCad():
                 
                 for P in Lista:
                     this.SetStaple(P[0], P[1])
-                
-        
         
         print ("comparaciones: " + str(comp))
         this.CleanStaple()
@@ -549,9 +553,20 @@ class ExportCad():
         this.growStaples()
         this.cleanSmallStaple()
         this.growStaples()
+        """
         
-                    
+        ### New technique just with staples
+        for n in range(7):
+            for staple in this.StapleList:
+                ### Grow staples 
+                staple.growStapleStep()
 
+
+        for staple in this.StapleList:
+            staple.applyStaple()
+            
+                    
+        # ~ this.CleanStaple()
 
 
 

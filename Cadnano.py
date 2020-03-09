@@ -23,6 +23,8 @@ exec(compile(open(filepath).read(), filepath, 'exec'))
 filepath = bpy.path.abspath("//HelixRod.py")
 exec(compile(open(filepath).read(), filepath, 'exec'))
 
+filepath = bpy.path.abspath("//Staple.py")
+exec(compile(open(filepath).read(), filepath, 'exec'))
 
 
 class Cadnano():
