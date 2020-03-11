@@ -164,7 +164,7 @@ class Staple():
                 if stp1 != this:
                     TouchingFirst = stp1 ### Touches other staple
                 else:
-                    print("Recursive 1")
+                    #print("Recursive 1")
                     this.Recursive1 = True
                 
         if bp2 != None and this.Recursive2 == False:            
@@ -180,7 +180,7 @@ class Staple():
                 if stp2 != this :
                     TouchingLast = stp2    
                 else:
-                    print("Recursive 2")
+                    #print("Recursive 2")
                     this.Recursive2 = True
         
         P = (First, Last, TouchingFirst, TouchingLast)
@@ -196,7 +196,7 @@ class Staple():
     def mergeNext(this):
         print("Looking touch")
         if this.TouchingLast_1 != None :
-            print("Looking touch2")
+            #print("Looking touch2")
             ### Merge next element just in case
             Next = this.TouchingLast_1.getFirst2()
             Prev = Next.getNext()
@@ -249,7 +249,7 @@ class Staple():
         # Set the configuration to the BP of the staples
         this.applyStrand(this.First_1, this.Last_1, this.FirstStrand)
         this.applyStrand(this.First_2, this.Last_2, this.SecondStrand)
-        print("Applying")
+        #print("Applying")
         
     
     def applyStrand(this, First, Last, Elements):    

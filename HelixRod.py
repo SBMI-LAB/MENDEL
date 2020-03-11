@@ -441,7 +441,7 @@ class HelixRod():
         
         if this != OtherHelix :
             
-            print("Creating relationship")
+            #print("Creating relationship")
             
             
             y = OtherHelix.getY()
@@ -449,7 +449,7 @@ class HelixRod():
             
             if y-this.y == 1 and z == this.z :
                 this.YP = OtherHelix
-                print("YPS")
+                #print("YPS")
                 if this.YPS == None:
                     if this.YP.getYPS() == None:
                         this.YPS = []
@@ -460,7 +460,7 @@ class HelixRod():
                  
             if this.y - y == 1 and z == this.z:
                 this.YN = OtherHelix
-                print("YNS")
+                #print("YNS")
                 if this.YNS == None:
                     if this.YN.getYNS() == None:
                         this.YNS = []

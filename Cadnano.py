@@ -17,13 +17,19 @@ def print(data):
 filepath = bpy.path.abspath("//scaff.py")
 exec(compile(open(filepath).read(), filepath, 'exec'))
 
-filepath = bpy.path.abspath("//ExportCad.py")
+#filepath = bpy.path.abspath("//ExportCad.py")
+#exec(compile(open(filepath).read(), filepath, 'exec'))
+
+filepath = bpy.path.abspath("//HelixCad.py")
 exec(compile(open(filepath).read(), filepath, 'exec'))
 
 filepath = bpy.path.abspath("//HelixRod.py")
 exec(compile(open(filepath).read(), filepath, 'exec'))
 
 filepath = bpy.path.abspath("//Staple.py")
+exec(compile(open(filepath).read(), filepath, 'exec'))
+
+filepath = bpy.path.abspath("//Render.py")
 exec(compile(open(filepath).read(), filepath, 'exec'))
 
 
@@ -44,9 +50,15 @@ class Cadnano():
     
     initial = 0
     
-    currentAngle = 0;
+    currentAngle = 0
     
-    xAngle = 0;
+    xAngle = 0
+
+    HelCad = None
+
+    Analyzed = False
+
+    
     
     def configure(this):
         names = False
@@ -374,19 +386,52 @@ class Cadnano():
         #for h in range(10):
         #    print(TT.getOrientation())
         #    TT = TT.GetNext()
-        
+
+    def analyzeStructure(this):
+
+        if this.Analyzed == False :
+            this.HelCad = HelixCad()
+            this.HelCad.setLast(this.prevBP)
+            this.HelCad.buildRods()
+            
+            this.HelCad.AnalyzeStaples()
+            this.Analyzed = True
+
+
+
         
     def writeCadnano(this, filename):
-        sal = ExportCad()
+
+        #this.HelCad = HelixCad()
+
+        #sal = ExportCad()
         
-        sal.setLast(this.prevBP)
+        #sal.setLast(this.prevBP)
         
-        sal.buildRods()
+        #sal.buildRods()
         
-        sal.AnalyzeStaples()
+        #sal.AnalyzeStaples()
         # ~ sal.AnalyzeStaplesOld()
+
+        #sal.writeFile(filename)
+        this.analyzeStructure()
+
+        this.HelCad.writeFile(filename)
+
+    def Clean(this):
+        bpy.ops.object.select_all(action='SELECT')
+        bpy.ops.object.delete(use_global=False, confirm=False)
+
+    
+    def RenderCylinders(this, res):
         
-        sal.writeFile(filename)
+        this.analyzeStructure()
+        render = RenderCad()
+        render.setHelices(this.HelCad)
+        render.RenderCylinders(res)
+
+
+
         
   
     

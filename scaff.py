@@ -332,6 +332,9 @@ class Scaff():
         P = (this.x, this.y, this.z)
         return P
 
+    def getX(this):
+        return this.x
+
     def SetNext(this, Next):
         this.Next = Next
 

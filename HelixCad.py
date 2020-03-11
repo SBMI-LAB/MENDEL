@@ -3,7 +3,7 @@ from math import radians
 import math
 
 
-class ExportCad():
+class HelixCad():
     filename = "output.json"
     
     Last = None
@@ -477,7 +477,7 @@ class ExportCad():
                         
                         Rod += 1
                         
-                        print("Comparing: (" + str(Ry1)  + "," + str(Rz1) +") with (" + str(Ry2)  + "," + str(Rz2) +")")
+                        #print("Comparing: (" + str(Ry1)  + "," + str(Rz1) +") with (" + str(Ry2)  + "," + str(Rz2) +")")
                         
                         ## Es una helice vecina
                         ###se hace analisis de vecindad
