@@ -41,6 +41,9 @@ class Staple():
     Recursive2 = False
     
     
+    Conflicts = None
+
+    Enabled = False
     
     
     
@@ -80,16 +83,20 @@ class Staple():
             this.Last_1  = bp_21
             
             this.First_2 = bp_22
-            this.Last_2  = bp_12            
-           
-        # ~ this.First_1 = bp_21
-        # ~ this.Last_1  = bp_11
-        
-        # ~ this.First_2 = bp_12
-        # ~ this.Last_2  = bp_22   
-            
+            this.Last_2  = bp_12                                 
         
         try:
+
+            this.Conflicts = []
+            if bp_11.getStaple() != None :
+                this.Conflicts.append(bp_11.getStaple())
+            if bp_12.getStaple() != None :
+                this.Conflicts.append(bp_12.getStaple())
+            if bp_21.getStaple() != None :
+                this.Conflicts.append(bp_21.getStaple())
+            if bp_22.getStaple() != None :
+                this.Conflicts.append(bp_22.getStaple())
+
 
             if bp_11.getStaple() != None or bp_12.getStaple() != None or bp_21.getStaple() != None or bp_22.getStaple() != None :
                 Exito = False           
@@ -112,10 +119,17 @@ class Staple():
         except: 
             Exito = False
         
+        this.Enabled = Exito
         
         return Exito
         
-        
+    def hasConflicts(this):
+        if len(this.Conflicts) > 0 :
+            return True
+        else:
+            return False
+
+
     def setTurn(this, turn1, turn2):
         this.Turn1 = turn1
         this.Turn2 = turn2
@@ -129,22 +143,22 @@ class Staple():
         
         ###  Remember HERE scaffold have opposite directions to staples
         
+        if this.Enabled :
+            P1 = this.growStrand (this.FirstStrand, this.First_1, this.Last_1, this.TouchingFirst_1, this.TouchingLast_1)
+            this.First_1 = P1[0]
+            this.Last_1 = P1[1]
+            this.TouchingFirst_1 = P1[2]
+            this.TouchingLast_1 = P1[3]  
 
-        P1 = this.growStrand (this.FirstStrand, this.First_1, this.Last_1, this.TouchingFirst_1, this.TouchingLast_1)
-        this.First_1 = P1[0]
-        this.Last_1 = P1[1]
-        this.TouchingFirst_1 = P1[2]
-        this.TouchingLast_1 = P1[3]  
-
-        P2 = this.growStrand (this.SecondStrand, this.First_2, this.Last_2, this.TouchingFirst_2, this.TouchingLast_2)
-        this.First_2 = P2[0]
-        this.Last_2 = P2[1]
-        this.TouchingFirst_2 = P2[2]
-        this.TouchingLast_2 = P2[3]
+            P2 = this.growStrand (this.SecondStrand, this.First_2, this.Last_2, this.TouchingFirst_2, this.TouchingLast_2)
+            this.First_2 = P2[0]
+            this.Last_2 = P2[1]
+            this.TouchingFirst_2 = P2[2]
+            this.TouchingLast_2 = P2[3]
 
             
     def growStrand (this, Elements, First, Last, TouchingFirst, TouchingLast):    
-        
+
         bp1 = First.getNext()  ## Next BP in scaffold
         bp2 = Last.getPrev()   ## Prev BP in scaffold
 
@@ -254,18 +268,21 @@ class Staple():
     
     def applyStrand(this, First, Last, Elements):    
         ## Set begining:
-        First.setPrevStp(None)
-        
-        Previo = First
-        
-        for BP in Elements:
-            if BP != Previo:
-                Previo.setNextStp(BP)
-                BP.setPrevStp(Previo)
-                Previo = BP
-        
-        ## Set ending:
-        Last.setNextStp(None)
+
+        if this.Enabled:
+
+            First.setPrevStp(None)
+            
+            Previo = First
+            
+            for BP in Elements:
+                if BP != Previo:
+                    Previo.setNextStp(BP)
+                    BP.setPrevStp(Previo)
+                    Previo = BP
+            
+            ## Set ending:
+            Last.setNextStp(None)
         
         
         

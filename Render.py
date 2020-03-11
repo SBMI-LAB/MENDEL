@@ -103,6 +103,18 @@ class RenderCad:
 
 
 
+    def RenderStrand(this, Lista):
+        ### Function that renders the strand as a ribbon
+        print("Rendering strand")
+
+    def RenderRibbons(this):
+        ### Function that will create a set of ribbons
+        ### To me shown as the scaffold and staples
+        print("Rendering ribbons")
+
+
+    
+    
 
 
 

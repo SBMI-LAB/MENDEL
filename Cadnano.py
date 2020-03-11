@@ -43,6 +43,7 @@ class Cadnano():
     
     CurrentRow = None
     pAng = 720/21
+    #pAng = 10
     
     firstTime = False
     

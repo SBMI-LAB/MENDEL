@@ -88,6 +88,9 @@ class Scaff():
             if P == 180:
                 this.z += 2
 
+            
+            this.ox += 720/21
+
 
             if this.oz == 0 or this.oz == 360:
                 this.oz = 180

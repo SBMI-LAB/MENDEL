@@ -85,25 +85,27 @@ class HelixRod():
         SObj.setRelations(this, OtherHelix)
         K = SObj.setStaple(pos, this.getRow(), OtherHelix.getRow())
         
-        if K: 
-            return SObj
-        else:
-            return False
+
         
-        # ~ if OtherHelix == this.YN:
-            # ~ this.YNS.append(pos)
+        if OtherHelix == this.YN:
+            this.YNS.append(SObj)
             
-        # ~ if OtherHelix == this.ZP:
-            # ~ this.ZPS.append(pos)
+        if OtherHelix == this.ZP:
+            this.ZPS.append(SObj)
             
-        # ~ if OtherHelix == this.ZN:
-            # ~ this.ZNS.append(pos)
+        if OtherHelix == this.ZN:
+            this.ZNS.append(SObj)
             
-        # ~ if OtherHelix == this.YP:
-            # ~ this.YPS.append(pos)
+        if OtherHelix == this.YP:
+            this.YPS.append(SObj)
                       
             
         
+        #if K: 
+        return SObj
+        #else:
+        #    return False
+
         # ~ this.maxStaple += 1  
         
 
