@@ -32,6 +32,13 @@ class HelixCad():
     def getHelices(this) : 
         return this.Helices
 
+
+    def getElements (this):
+        return this.ElementList
+
+    def getStapleList(this):
+        return this.StapleList
+
     def growStaples(this):
 
         for f in range (this.tailLen):
@@ -557,7 +564,7 @@ class HelixCad():
         """
         
         ### New technique just with staples
-        for n in range(7):
+        for n in range(100):
             for staple in this.StapleList:
                 ### Grow staples 
                 staple.growStapleStep()

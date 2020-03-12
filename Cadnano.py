@@ -431,6 +431,13 @@ class Cadnano():
         render.setHelices(this.HelCad)
         render.RenderCylinders(res)
 
+    def RenderRibbons(this):
+        this.analyzeStructure()
+        render = RenderCad()
+        render.setHelices(this.HelCad)
+        render.RenderRibbons()
+        
+
 
 
         

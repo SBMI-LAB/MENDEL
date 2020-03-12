@@ -163,6 +163,9 @@ class Scaff():
         P = Vector( (this.lx, this.ly, this.lz) )
         return P
         #return this.Ob_link.matrix_world.to_translation()
+    def getPosScaffold(this):
+        P = Vector ( (this.sx, this.sy, this.sz) )
+        return P
     
     def getPos(this):
         return this.posinrod

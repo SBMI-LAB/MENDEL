@@ -45,6 +45,15 @@ class Staple():
 
     Enabled = False
     
+
+    def isEnabled(this):
+        return this.Enabled
+
+    def getFirstStrand(this):
+        return this.FirstStrand
+    
+    def getSecondStrand(this):
+        return this.SecondStrand
     
     
     def setRelations(this, rod1, rod2):

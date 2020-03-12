@@ -9,6 +9,8 @@ class RenderCad:
     z = 0
     vertices = 3
 
+    BaseRibbon = None
+
 
     def setHelices(this, helices):
         this.Helices = helices
@@ -107,10 +109,135 @@ class RenderCad:
         ### Function that renders the strand as a ribbon
         print("Rendering strand")
 
+
+    def createSpline(this, coords_list, resolution, closed):
+        crv = bpy.data.curves.new('crv', 'CURVE')
+        crv.dimensions = '3D'
+        # make a new spline in that curve
+        spline = crv.splines.new(type='BEZIER')
+        #spline.use_endpoint_u = True
+        #spline.use_bezier_u = True
+        
+
+        if closed: 
+            spline.use_cyclic_u = True
+        
+        
+        # a spline point for each point
+        spline.bezier_points.add(len(coords_list)-1) # theres already one point by default
+
+        prevL = coords_list[0]
+
+        prev = None
+
+        First = False
+
+        # assign the point coordinates to the spline points
+        for p, new_co in zip(spline.bezier_points, coords_list):
+            p.co = (new_co ) # (add nurbs weight)
+            p.handle_left = p.handle_right = p.co
+
+            if prev != None:
+                left = ( (prevL[0] + new_co[0]) / 2, (prevL[1] + new_co[1]) / 2, (prevL[2] + new_co[2]) / 2)
+                prev.handle_right = left
+                p.handle_left = left
+
+                if First == False:
+                    prev.handle_right = left
+            
+            
+
+            prev = p
+            prevL = new_co
+
+            
+
+
+
+
+            
+            
+
+
+
+
+        # make a new object with the curve
+        obj = bpy.data.objects.new('object_name', crv)
+
+        spline.order_u = resolution
+
+        return obj
+    
+
     def RenderRibbons(this):
         ### Function that will create a set of ribbons
         ### To me shown as the scaffold and staples
         print("Rendering ribbons")
+
+        ### This will create Ribbons
+        ## First, the base Ribbon
+
+        depth = 0.5
+        res = 4
+
+        b = 0.5
+        h = 0.5
+        coord1 = [ [0,0,0], [0, b, 0], [h, b , 0], [h, 0, 0] ]
+        obj1 = this.createSpline( coord1, 4, True )
+
+        bpy.context.scene.collection.objects.link(obj1)
+
+
+        ### Create the Scaffold:
+        SC_Coord = []
+
+        
+
+        for BP in this.Helices.getElements() :
+            ### Basically, just draw them
+            P = BP.getPosScaffold()
+            C = [  P[0], P[1], P[2] ]
+            SC_Coord.append( C )
+
+        obj2 = this.createSpline(SC_Coord, 2, False)         
+        bpy.context.scene.collection.objects.link(obj2)
+        #obj2.data.bevel_object = obj1
+        obj2.data.bevel_depth = depth
+        obj2.data.bevel_resolution = res
+
+
+        bpy.data.objects[-1].data.materials.append(bpy.data.materials[0])
+        #obj2.data.twist_mode = 'Z_UP'
+
+        ### Scaffold created
+
+        for staplec in this.Helices.getStapleList():
+            
+            if staplec.isEnabled():
+                Listas = []
+                Listas.append(staplec.getFirstStrand())
+                Listas.append(staplec.getSecondStrand())
+
+                for lista in Listas :
+                    coordN = []
+                    for BP in lista :
+                        ### Basically, just draw them
+                        P = BP.getPosStp()
+                        C = [  P[0], P[1], P[2] ]
+                        coordN.append( C )
+                    
+                    objN = this.createSpline(coordN, 3, False)         
+                    bpy.context.scene.collection.objects.link(objN)
+                    objN.data.bevel_depth = depth
+                    objN.data.bevel_resolution = res
+                    bpy.data.objects[-1].data.materials.append(bpy.data.materials[1])
+                    #objN.data.bevel_object = obj1
+                    #objN.data.twist_mode = 'Z_UP'
+                    
+
+
+
+
 
 
     
