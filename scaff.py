@@ -89,13 +89,16 @@ class Scaff():
                 this.z += 2
 
             
-            this.ox += 720/21
+            
 
 
             if this.oz == 0 or this.oz == 360:
                 this.oz = 180
+                this.ox += 720/21
             else:
                 this.oz = 0
+                
+                this.ox += 720/21
             
             this.updatePos()
 
@@ -121,10 +124,10 @@ class Scaff():
             ## perform opposit rotation
             #print ("Case 2")
             this.sy = -this.pSep*sin(this.ox*radians(180)/180)
-            this.sz = this.pSep*cos(this.ox*radians(180)/180)
+            this.sz = -this.pSep*cos(this.ox*radians(180)/180)
 
             this.ly = this.sSep*sin(this.ox*radians(180)/180)
-            this.lz = -this.sSep*cos(this.ox*radians(180)/180)
+            this.lz = this.sSep*cos(this.ox*radians(180)/180)
 
 
         this.sx = this.x

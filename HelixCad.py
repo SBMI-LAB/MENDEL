@@ -483,8 +483,11 @@ class HelixCad():
                         Row2.setRelation(Row1)
                         
                         Rod += 1
+
+                        Activated = 0
+                        Attempts = 0
                         
-                        #print("Comparing: (" + str(Ry1)  + "," + str(Rz1) +") with (" + str(Ry2)  + "," + str(Rz2) +")")
+                        print("Comparing: (" + str(Ry1)  + "," + str(Rz1) +") with (" + str(Ry2)  + "," + str(Rz2) +")")
                         
                         ## Es una helice vecina
                         ###se hace analisis de vecindad
@@ -533,9 +536,13 @@ class HelixCad():
                                         
                                         # ~ Row1.setStaple(x,Row2)
                                         TT = Row1.setStapleNew(x,Row2)
+                                        Attempts += 1
                                         if TT != False:
                                             this.StapleList.append( TT )
-            
+                                            Activated += 1
+
+                                            
+                        print ("Staples: " + str(Activated) + " , active: " + str(Activated))                   
             # ~ print ("Next")
             # ~ this.DecideStaples(StapleLoc,StapleB1, StapleB2, StapleRod)                            
   
@@ -564,14 +571,15 @@ class HelixCad():
         """
         
         ### New technique just with staples
-        for n in range(100):
-            for staple in this.StapleList:
-                ### Grow staples 
-                staple.growStapleStep()
+
+        # for n in range(100):
+        #     for staple in this.StapleList:
+        #         ### Grow staples 
+        #         staple.growStapleStep()
 
 
-        for staple in this.StapleList:
-            staple.applyStaple()
+        # for staple in this.StapleList:
+        #     staple.applyStaple()
             
                     
         # ~ this.CleanStaple()
@@ -581,6 +589,22 @@ class HelixCad():
     ### Method setLast will fill the list Element list
     ### With all basepairs that were created
     ### Reference is "The Last" and go backwards    
+
+    def stepGrowStaples(this):
+        for n in range(100):
+            for staple in this.StapleList:
+                ### Grow staples 
+                staple.growStapleStep()
+    
+
+    def solveConflicts(this):
+        for helixRod in this.Helices:
+            if helixRod.isEmpty() == False:
+                helixRod.checkConflicts()
+
+    def applyStaples(this):
+        for staple in this.StapleList:
+            staple.applyStaple()
 
     def setLast(this, theLast):
         

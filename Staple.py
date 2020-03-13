@@ -44,7 +44,15 @@ class Staple():
     Conflicts = None
 
     Enabled = False
+
+    Ignored = False
     
+
+    def setIgnored (this):
+        this.Ignored = True
+
+    def isIgnored(this):
+        return this.Ignored
 
     def isEnabled(this):
         return this.Enabled
@@ -61,6 +69,13 @@ class Staple():
         this.Rod2 = rod2
         this.FirstStrand = []
         this.SecondStrand = []
+
+    def getRod1(this):
+        return this.Rod1
+    
+    def getRod2(this):
+        return this.Rod2
+
     
     def setStaple (this, cross, row1, row2) : 
         this.Crossing = cross
@@ -138,6 +153,8 @@ class Staple():
         else:
             return False
 
+    def getConflicts(this):
+        return this.Conflicts
 
     def setTurn(this, turn1, turn2):
         this.Turn1 = turn1

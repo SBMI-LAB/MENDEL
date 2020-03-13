@@ -32,6 +32,12 @@ exec(compile(open(filepath).read(), filepath, 'exec'))
 filepath = bpy.path.abspath("//Render.py")
 exec(compile(open(filepath).read(), filepath, 'exec'))
 
+try:
+    filepath = bpy.path.abspath("//asymptote.py")
+    exec(compile(open(filepath).read(), filepath, 'exec'))
+except:
+    print("Module asymptote cannot be initialized")
+
 
 class Cadnano():
     
@@ -396,6 +402,16 @@ class Cadnano():
             this.HelCad.buildRods()
             
             this.HelCad.AnalyzeStaples()
+
+            this.HelCad.solveConflicts()
+
+            this.HelCad.stepGrowStaples()
+
+            this.HelCad.applyStaples()
+
+            
+
+
             this.Analyzed = True
 
 
@@ -436,6 +452,12 @@ class Cadnano():
         render = RenderCad()
         render.setHelices(this.HelCad)
         render.RenderRibbons()
+
+    def RenderPDF(this, filename):
+        this.analyzeStructure()
+        render = RenderCad()
+        render.setHelices(this.HelCad)
+        render.RenderPDF(filename)
         
 
 

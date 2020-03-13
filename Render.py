@@ -1,6 +1,8 @@
 import bpy
 from mathutils import Vector
 
+import shutil, os
+
 class RenderCad: 
 
     Helices = None
@@ -177,6 +179,8 @@ class RenderCad:
         ### This will create Ribbons
         ## First, the base Ribbon
 
+        stpInd = 1
+
         depth = 0.5
         res = 4
 
@@ -220,19 +224,82 @@ class RenderCad:
 
                 for lista in Listas :
                     coordN = []
+                    
+                    BP = lista[0]
+                    BP2 = BP.getNext()
+                    this.addIntermediate(BP, BP2, coordN)
+                    
                     for BP in lista :
                         ### Basically, just draw them
                         P = BP.getPosStp()
                         C = [  P[0], P[1], P[2] ]
                         coordN.append( C )
                     
+                    BP = lista[-1]
+                    BP2 = BP.getPrev()
+                    this.addIntermediate(BP, BP2, coordN)
+
                     objN = this.createSpline(coordN, 3, False)         
                     bpy.context.scene.collection.objects.link(objN)
                     objN.data.bevel_depth = depth
                     objN.data.bevel_resolution = res
-                    bpy.data.objects[-1].data.materials.append(bpy.data.materials[1])
+                    bpy.data.objects[-1].data.materials.append(bpy.data.materials[stpInd])
+
+                    stpInd += 1
+
+                    if stpInd == 4:
+                        stpInd = 1
+
                     #objN.data.bevel_object = obj1
                     #objN.data.twist_mode = 'Z_UP'
+
+
+    def addIntermediate (this, BP1, BP2, coordN):
+        if BP1 != None and BP2 != None :
+            P = BP1.getPosStp()
+            P2 = BP2.getPosStp()
+            C = [  (P[0]+P2[0])/2, (P[1]+P2[1])/2, (P[2]+P2[2]/2) ]
+            coordN.append( C )
+
+
+    def RenderPDF(this, filename):
+
+        Exito = False
+        
+        try:
+            print ("Rendering in asymptote")
+            g = asy()
+            print("Executing...")
+            g.send("import settings")
+            g.send('outformat="pdf"')
+            g.send('interactiveView=false')
+            
+
+            g.size(300)
+            g.send("draw(unitsquare)")
+            g.fill("unitsquare, blue")
+            g.clip("unitcircle")
+            g.label("\"$O$\", (0,0), SW")
+            
+            g.finish()
+
+            
+            Exito = True
+
+        
+        except:
+            print ("Error running asymptote")
+
+        
+        if Exito :
+            ## Move file to user location
+            try:
+                filepath = bpy.path.abspath("//"+filename)
+                
+                shutil.move("out.pdf", filepath)
+                print("Output file located in: " + filepath)
+            except:
+                print("Error moving file. Check your home folder")
                     
 
 
