@@ -602,6 +602,33 @@ class HelixCad():
             if helixRod.isEmpty() == False:
                 helixRod.checkConflicts()
 
+    def reduceStaples(this):
+
+        minStaple = 1
+
+        for helixRod in this.Helices:
+            if helixRod.isEmpty() == False:
+                helixRod.ReduceStaples(minStaple)   
+        
+        for helixRod in this.Helices:
+            if helixRod.isEmpty() == False:
+                helixRod.ReduceStaples2() 
+
+
+        # minStaple = 2
+
+        # for helixRod in this.Helices:
+        #     if helixRod.isEmpty() == False:
+        #         helixRod.ReduceStaples(minStaple)    
+
+        # for helixRod in this.Helices:
+        #     if helixRod.isEmpty() == False:
+        #         helixRod.ReduceStaples2()                  
+
+                           
+
+
+
     def applyStaples(this):
         for staple in this.StapleList:
             staple.applyStaple()

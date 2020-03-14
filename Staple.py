@@ -4,6 +4,9 @@ import math
 
 
 class Staple():
+
+    MinStaple = 1
+    IdealStaple = 14
     
     Rod1 = None
     Rod2 = None
@@ -46,7 +49,35 @@ class Staple():
     Enabled = False
 
     Ignored = False
+
+    Merged = False
+
+    Visited = False
     
+
+    def getMinLength(this):
+        minLength = -1
+
+        if this.isEnabled():
+            try:
+                D1 = this.LengthFirst_1 = abs( this.First_1.getX() - this.Crossing  )
+                D2 = this.LengthFirst_2 = abs( this.First_2.getX() - this.Crossing  )
+                D3 = this.LengthLast_1 = abs( this.Last_1.getX() - this.Crossing  )
+                D4 = this.LengthLast_1 = abs( this.Last_2.getX() - this.Crossing  )
+
+
+                #PT = (this.First_1.getX(), this.First_2.getX(), this.Last_1.getX(), this.Last_2.getX() )
+                P = ( D1, D2, D3, D4 )
+                #print(this.Crossing)
+                #print(PT)
+                #print(P)
+                
+                minLength = min ( P )
+            except:
+                print("No enabled")
+
+        return minLength
+
 
     def setIgnored (this):
         this.Ignored = True
@@ -62,6 +93,8 @@ class Staple():
     
     def getSecondStrand(this):
         return this.SecondStrand
+
+    
     
     
     def setRelations(this, rod1, rod2):
@@ -85,6 +118,8 @@ class Staple():
         ### First and last is defined in terms of the orientation
         ### This gives a more control about the geometry
         
+        this.Crossing = cross
+
         bp_11 = row1[cross]
         bp_12 = row1[cross+1]
         
@@ -203,6 +238,8 @@ class Staple():
             else:
                 if stp1 != this:
                     TouchingFirst = stp1 ### Touches other staple
+                    if stp1 != None:
+                        stp1.extTouch(this, bp1)
                 else:
                     #print("Recursive 1")
                     this.Recursive1 = True
@@ -218,7 +255,9 @@ class Staple():
                 Elements.append(bp2)
             else:
                 if stp2 != this :
-                    TouchingLast = stp2    
+                    TouchingLast = stp2   
+                    if stp2 != None: 
+                        stp2.extTouch(this, bp2)
                 else:
                     #print("Recursive 2")
                     this.Recursive2 = True
@@ -227,11 +266,33 @@ class Staple():
         return P
     
     
+    def extTouch(this, Touching, BP):
+        if BP != None:
+            if BP == this.getFirst1() :
+                this.TouchingFirst_1 = Touching
+            if BP == this.getFirst2() :
+                this.TouchingFirst_2 = Touching
+
+            if BP == this.getLast1() :
+                this.TouchingLast_1 = Touching 
+            if BP == this.getLast2() :
+                this.TouchingLast_2 = Touching 
+
+
     def getFirst1(this):
-        return this.First_1
+        return this.FirstStrand[0]
     
     def getFirst2(this):
-        return this.First_2
+        #return this.First_2
+        return this.SecondStrand[0]
+    
+    def getLast1(this):
+        #return this.Last_1
+        return this.FirstStrand[-1]
+    
+    def getLast2(this):
+        #return this.Last_2
+        return this.SecondStrand[-1]
     
     def mergeNext(this):
         print("Looking touch")
@@ -302,7 +363,7 @@ class Staple():
             Previo = First
             
             for BP in Elements:
-                if BP != Previo:
+                if BP != Previo and BP != None:
                     Previo.setNextStp(BP)
                     BP.setPrevStp(Previo)
                     Previo = BP
@@ -318,7 +379,309 @@ class Staple():
         
     def getLengthLast(this):
         return this.LengthLast
+    
+
+    def tryFuseStaple(this, Minstp):
+        ### Here, it will attempt to dissolve a staple
+        ### And probably merge it with another when it 
+        ### is too short
+
+        this.MinStaple = Minstp
+
+        MinD =  this.getMinLength()
+
+        if MinD < this.MinStaple:
+            print("Staple must be fused: " + str(MinD))
+
+            ### How to fuse them???
+            ### First strand should grow from beggining and then
+            ### after the cross section, it will be added to the second 
+            ### strand. And viceversa.
+
+            ### The crossing will be removed of course
+
+            ### Also, vector can be reseted, grow again from the
+            ### Start1 and finish in the Last2
+
+            ## Let's do this:
+
+            if this.First_1 != None and this.First_2 != None and this.Last_1 != None and this.Last_2 != None:
+                
+                ## Itera first strand
+                BeginBP = this.First_1
+                EndBP = this.Last_2
+
+                this.FirstStrand.clear()
+
+                this.FirstStrand.append(BeginBP)
+
+                Siguiente = BeginBP.getPrev()
+
+                
+                while Siguiente != EndBP:
+                    this.FirstStrand.append(Siguiente)
+                    Siguiente = Siguiente.getPrev()
+
+                this.FirstStrand.append(EndBP)
+
+                ## Itera second strand
+                BeginBP = this.First_2
+                EndBP = this.Last_1
+
+                this.SecondStrand.clear()
+
+                this.SecondStrand.append(BeginBP)
+
+                Siguiente = BeginBP.getPrev()
+
+                
+                while Siguiente != EndBP:
+                    this.SecondStrand.append(Siguiente)
+                    Siguiente = Siguiente.getPrev()
+                
+                this.SecondStrand.append(EndBP)
+                ## Switch places
+
+                #BPT = this.Last_1
+                #this.Last_1 = this.Last_2
+                #this.Last_2 = BP
+
+                #this.Last_1 = this.FirstStrand[-1]
+                #this.Last_2 = this.SecondStrand[-1]
+
+                ### Here comes one really important step:
+                ### Fuse with next staple and remove current.
+                ## is it possible?
+
+                ## Try fuse only First
+
         
+
+    def getTouchingVector (this, BP):
+        ### Try to obtain the touching vector for BP
+        Touching = None
+        try :
+            if BP != None :
+
+                print ("BP: " + str(BP.getX()))
+
+                BPN = BP.getNext()
+                
+                if BPN != None : 
+                    if this.TouchingFirst_1 != None:
+                        if this.TouchingFirst_1.getLast1() == BPN:
+                            Touching = this.TouchingFirst_1.getFirstStrand()
+                            print("C1")
+                        if this.TouchingFirst_1.getLast2() == BPN:
+                            Touching = this.TouchingFirst_1.getSecondStrand()
+                            print("C2")
+
+                    if this.TouchingFirst_2 != None:
+                        if this.TouchingFirst_2.getLast1() == BPN:
+                            Touching = this.TouchingFirst_2.getFirstStrand()
+                            print("C3")
+
+                        if this.TouchingFirst_2.getLast2() == BPN:
+                            Touching = this.TouchingFirst_2.getSecondStrand()
+                            print("C4")
+
+                
+
+                BPN = BP.getPrev()
+                if BPN != None: 
+                    if this.TouchingLast_1 != None:
+                        if this.TouchingLast_1.getFirst1() == BPN:
+                            Touching = this.TouchingLast_1.getFirstStrand()
+                            print("C5")
+                        if this.TouchingLast_1.getFirst2() == BPN:
+                            Touching = this.TouchingLast_1.getSecondStrand()
+                            print("C6")
+
+                    if this.TouchingLast_2 != None:
+                        if this.TouchingLast_2.getFirst1() == BPN:
+                            Touching = this.TouchingLast_2.getFirstStrand()
+                            print("C7")
+                        if this.TouchingLast_2.getFirst2() == BPN:
+                            Touching = this.TouchingLast_2.getSecondStrand()
+                            print("C8")
+
+                
+
+        except:
+            None
+        
+        return Touching
+
+
+
+    def tryMergeStaples(this):
+        if this.Merged == False:
+            this.mergeByTouchHead(this.TouchingFirst_1)
+            #this.mergeByTouchHead(this.TouchingFirst_2)
+    
+    def fuseVectorsAppend(this, initial, final ):
+        for BP in final:
+            initial.append(BP)
+
+    def fuseVectorsInitial(this, initial, final ):
+        
+        k = 0
+        for BP in final:
+            initial.insert(k,BP)
+            k += 1
+
+        indices = []
+        for BP in initial:
+            indices.append( BP.getX()  )
+
+        print (indices)
+        
+
+    def tryMergeSingleLines(this):
+        ### Try to merge
+        Exito = False
+
+        if True:
+        #if this.Visited == False:
+
+            if Exito == False:
+                BP1 = this.FirstStrand[0]
+                BP2 = this.FirstStrand[-1]
+
+                if BP1.getRod() == BP2.getRod():
+                    print(str(this.Rod1.getNumber())+ ") Single lines AB: " + str(BP1.getRod()) + " , " + str(BP1.getX()) + " - " + str(BP2.getX()))
+                    Rows = this.getTouchingVector(BP1)
+                    if Rows != None :
+                        if Rows[-1].getRod() == BP1.getRod() :
+                            print("Preparing to fuse vectors A")
+                            this.fuseVectorsAppend(Rows, this.FirstStrand)
+                            this.FirstStrand.clear()
+                            Exito = True
+                    
+                    if Exito == False:
+                        Rows = this.getTouchingVector(BP2)
+                        if Rows != None :
+                            if Rows[0].getRod() == BP2.getRod() :
+                                print("Preparing to fuse vectors B")
+                                if Rows == this.FirstStrand:
+                                    print("Es el mismo vector")
+                                this.fuseVectorsInitial(Rows, this.FirstStrand)
+                                this.FirstStrand.clear()
+                                Exito = True
+
+            if Exito == False:
+                BP1 = this.SecondStrand[0]
+                BP2 = this.SecondStrand[-1]
+
+                if BP1.getRod() == BP2.getRod():
+                    print(str(this.Rod1.getNumber())+ ") Single lines CD: " + str(BP1.getRod()) + " , " + str(BP1.getX()) + " - " + str(BP2.getX()))
+                    Rows = this.getTouchingVector(BP1)
+                    if Rows != None :
+                        if Rows[-1].getRod() == BP1.getRod() :
+                            print("Preparing to fuse vectors C")
+                            this.fuseVectorsAppend(Rows, this.SecondStrand)
+                            this.SecondStrand.clear()
+                            Exito = True
+                    
+                    #Exito = True
+
+                    if Exito == False:
+                        Rows = this.getTouchingVector(BP2)
+                        if Rows != None :
+                            if Rows[0].getRod() == BP2.getRod() :
+                                print("Preparing to fuse vectors D")
+                                if Rows == this.SecondStrand:
+                                    print("Es el mismo vector")
+                                this.fuseVectorsInitial(Rows, this.SecondStrand)
+                                this.SecondStrand.clear()
+                                Exito = True
+
+        this.Visited = True
+     
+
+
+
+    def mergeFirstStrandTail(this, Strand):
+        
+        BP1 = Strand[0]
+
+        if BP1.getRod() == this.Last_1.getRod() :
+
+            print("Merging strand")
+            for BP in Strand:
+                this.FirstStrand.append(BP)
+            if Strand[-1] != None:
+                this.Last_1 = Strand[-1]
+            this.Merged = True
+
+
+    def mergeSecondStrandTail(this, Strand):
+        
+        print("Merging strand")
+        for BP in Strand:
+            this.SecondStrand.append(BP)
+        if Strand[-1] != None:
+            this.Last_2 = Strand[-1]
+        this.Merged = True        
+
+
+    def isMerged(this):
+        return this.Merged
+
+
+
+
+    def mergeByTouchHead(this, Touch):
+        ### This method will attempt to merge the strands to 
+        ### the strands of the touching object.
+        ### This will attempt one of the TouchFirsts, and the
+        ### corresponding strand to the other vector.
+        Exito = False
+
+        if Touch != None :
+            if Touch.isMerged() == False:
+                # Touch is another staple. Let's check where it is touching
+                BP1 = Touch.getLast1()
+                ## Prev should be the touching
+                N = BP1.getPrev()
+                FusingStrand = None
+                if N == this.First_1 : ### Fuse first strand
+                    FusingStrand = this.FirstStrand
+                
+                if N == this.First_2:
+                    FusingStrand = this.SecondStrand
+
+                if FusingStrand != None :
+                    Touch.mergeFirstStrandTail(FusingStrand)
+                    FusingStrand.clear()
+                    this.Merged = True
+                    Exito = True
+
+                if Exito == False:
+                    ## Repeat with the other
+                    BP1 = Touch.getLast2()
+                    ## Prev should be the touching
+                    N = BP1.getPrev()
+                    FusingStrand = None
+                    if N == this.First_1 : ### Fuse first strand
+                        FusingStrand = this.FirstStrand
+                    
+                    if N == this.First_2:
+                        FusingStrand = this.SecondStrand
+
+                    if FusingStrand != None :
+                        Touch.mergeSecondStrandTail(FusingStrand)
+                        FusingStrand.clear()
+                        this.Merged = True                    
+            
+            
+
+
+
+
+
+
+
         
         
     

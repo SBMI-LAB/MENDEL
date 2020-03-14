@@ -35,7 +35,7 @@ class Scaff():
     
     mode = "Final"
     
-    geom = True
+    geom = False
     
     rodnumber = 0
     posinrod = 0

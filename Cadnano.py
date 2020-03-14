@@ -400,12 +400,17 @@ class Cadnano():
             this.HelCad = HelixCad()
             this.HelCad.setLast(this.prevBP)
             this.HelCad.buildRods()
-            
+
             this.HelCad.AnalyzeStaples()
 
             this.HelCad.solveConflicts()
 
             this.HelCad.stepGrowStaples()
+
+
+            this.HelCad.reduceStaples()
+
+            
 
             this.HelCad.applyStaples()
 

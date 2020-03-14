@@ -131,6 +131,32 @@ class HelixRod():
         # ~ this.maxStaple += 1  
         
 
+    def ReduceStaples(this, minSize):
+        Listas = [ this.YNS, this.YPS, this.ZNS, this.ZPS ]
+        
+        for Lista in Listas:
+            if Lista != None:
+                for Elem in Lista:
+                    if Elem != None :
+                        try:
+                            Elem.tryFuseStaple(minSize)
+                            #Elem.tryMergeStaples()
+                        except:
+                            None
+
+        ## Repeat to reduce lines                            
+    def ReduceStaples2(this):
+        Listas = [ this.YNS, this.YPS, this.ZNS, this.ZPS ]
+        for Lista in Listas:
+            if Lista != None:
+                for Elem in Lista:
+                    if Elem != None :
+                        try:
+                            Elem.tryMergeSingleLines()
+                            #print("")
+                        except:
+                            None
+
     def checkConflicts(this):
         #print("Checking conflicts...")
         this.solveConflicts(this.YNS)
@@ -164,11 +190,9 @@ class HelixRod():
                         n += 1
                     if Elem.isEnabled() :
                         Actives += 1
-
-            
-
             #if Total == 0:
             #    print("Rod: "+str(this.currentRod)+") Conflicting staples " + str(n) + " Active staples :" + str(Actives) + " Total: " + str(Total))  
+
           
     
     def getStapleListBP (this):

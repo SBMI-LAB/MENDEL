@@ -223,32 +223,33 @@ class RenderCad:
                 Listas.append(staplec.getSecondStrand())
 
                 for lista in Listas :
-                    coordN = []
-                    
-                    BP = lista[0]
-                    BP2 = BP.getNext()
-                    this.addIntermediate(BP, BP2, coordN)
-                    
-                    for BP in lista :
-                        ### Basically, just draw them
-                        P = BP.getPosStp()
-                        C = [  P[0], P[1], P[2] ]
-                        coordN.append( C )
-                    
-                    BP = lista[-1]
-                    BP2 = BP.getPrev()
-                    this.addIntermediate(BP, BP2, coordN)
+                    if len(lista) > 0:
+                        coordN = []
+                        
+                        BP = lista[0]
+                        BP2 = BP.getNext()
+                        this.addIntermediate(BP, BP2, coordN)
+                        
+                        for BP in lista :
+                            ### Basically, just draw them
+                            P = BP.getPosStp()
+                            C = [  P[0], P[1], P[2] ]
+                            coordN.append( C )
+                        
+                        BP = lista[-1]
+                        BP2 = BP.getPrev()
+                        this.addIntermediate(BP, BP2, coordN)
 
-                    objN = this.createSpline(coordN, 3, False)         
-                    bpy.context.scene.collection.objects.link(objN)
-                    objN.data.bevel_depth = depth
-                    objN.data.bevel_resolution = res
-                    bpy.data.objects[-1].data.materials.append(bpy.data.materials[stpInd])
+                        objN = this.createSpline(coordN, 3, False)         
+                        bpy.context.scene.collection.objects.link(objN)
+                        objN.data.bevel_depth = depth
+                        objN.data.bevel_resolution = res
+                        bpy.data.objects[-1].data.materials.append(bpy.data.materials[stpInd])
 
-                    stpInd += 1
+                        stpInd += 1
 
-                    if stpInd == 4:
-                        stpInd = 1
+                        if stpInd == 4:
+                            stpInd = 1
 
                     #objN.data.bevel_object = obj1
                     #objN.data.twist_mode = 'Z_UP'
