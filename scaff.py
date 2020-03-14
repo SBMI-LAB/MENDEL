@@ -35,7 +35,7 @@ class Scaff():
     
     mode = "Final"
     
-    geom = False
+    geom = True
     
     rodnumber = 0
     posinrod = 0
@@ -94,11 +94,18 @@ class Scaff():
 
             if this.oz == 0 or this.oz == 360:
                 this.oz = 180
-                this.ox += 720/21
+
+
+
+                ### Compatibility
+                this.ox = 180 - this.ox
+
+                #this.ox = -this.ox + 180
+                
             else:
                 this.oz = 0
                 
-                this.ox += 720/21
+                this.ox = 180 - this.ox 
             
             this.updatePos()
 
