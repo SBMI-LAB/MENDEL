@@ -410,11 +410,12 @@ class Cadnano():
 
             this.HelCad.reduceStaples()
 
+            #this.HelCad.stepGrowStaples()
             
 
             this.HelCad.applyStaples()
 
-            
+            #this.HelCad.CleanStaple()
 
 
             this.Analyzed = True

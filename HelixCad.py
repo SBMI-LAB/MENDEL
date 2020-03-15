@@ -609,21 +609,49 @@ class HelixCad():
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
                 helixRod.ReduceStaples(minStaple)   
+
+
         
+
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
                 helixRod.ReduceStaples2() 
 
+        #for staple in this.StapleList:
+        #    staple.growStapleStep()
+        
+        ### HERE 
+        """
+        Staples were grown, identified, etc.
+        They can be converted to separated lines, and 
+        then fused with neighbors.
+        It is not perfect, it's a work in progress
 
-        # minStaple = 2
+        Requirements for next step:
+        1.  Count the amount of crossings, and the distance.
+            Increase the distance between crossings, up to a 
+            desired value.
+        2.  Convert to lines the collapsed crossings *
+        3.  Fuse them *
 
-        # for helixRod in this.Helices:
-        #     if helixRod.isEmpty() == False:
-        #         helixRod.ReduceStaples(minStaple)    
+        So far, the most complex function here is identify
+        the crossings from the list, measure the distance
+        and decide which of them are going to be deleted.
+        
+        """
 
-        # for helixRod in this.Helices:
-        #     if helixRod.isEmpty() == False:
-        #         helixRod.ReduceStaples2()                  
+
+        #for staple in this.StapleList:
+        #    staple.growStapleStep()
+
+
+        #minStaple = 2
+        #for helixRod in this.Helices:
+        #    if helixRod.isEmpty() == False:
+        #        helixRod.ReduceStaples(minStaple)  
+
+
+                
 
                            
 
