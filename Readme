@@ -1,0 +1,202 @@
+Blender Cadnano Helper
+
+
+
+
+
+V15
+03/14/2020 12:20:35 PM -0400
+V15: Restarting the merge of staples
+03/14/2020 06:47:35 PM -0400
+Working fuse staples. Not merging all
+03/15/2020 03:43:56 PM -0400
+First time working everything. Need to fuse more crossings, for next time
+03/15/2020 06:01:00 PM -0400
+Asymptote module added
+
+
+V14
+03/11/2020 11:08:56 AM -0400
+V14 Added render part
+03/11/2020 02:00:33 PM -0400
+Render module working with cylinders
+03/11/2020 07:23:23 PM -0400
+Small updates
+03/12/2020 05:21:25 PM -0400
+Strand rendering working
+03/13/2020 05:59:36 PM -0400
+Conflict solver for staples added. Not working yet
+
+
+
+V13
+Begin to register versions using Git
+03/07/2020 10:35:28 AM -0500
+Added HelixRod
+03/07/2020 03:26:08 PM -0500
+Basic step forward to Helix and staple analysis
+03/08/2020 01:39:16 PM -0400
+V13: Add of staple class
+03/09/2020 04:30:20 PM -0400
+V13 Updates
+
+
+
+V12
+Saved 2020-03-06
+Basic goals of V11: Independence of Blender geometry.
+Export scaffold successful. 
+Stapple analysis reviewed: slow performance.
+Saved for next iteration:
+Classification of stapples by helix and position.
+Take decision of allow or not a staple.
+
+
+V11
+Started 2020-03-03
+Only store python code by version. 
+Main goal:
+Finalize independence of the software from Blender transformations
+in the cadnano export
+Other goals:
++ Split export module: Analysis and export
+
+Ideas for next version:
+Remove geometry generation during data structure creation.
+Create instead Render commands. 
+Render commands can be:
+RenderSpheres: Render spheres as current version does
+RenderRods: Render rods like cando
+RenderHelices: Render curves for helices
+
+And modifications:
+RenderScaffold: Render only scaffold
+RenderStapple: Render only stapple
+RenderHelixSC(y,z): Render only scaffold of helix y,z
+RenderStapple(y,z): Render only stapple of helix y,z
+
+
+
+
+V10
+Started 2020-03-03
+Main goal: 
+Make independent of Blender transformations
++ Incorporate internal coordinates of BP (no geometry coordinates)
++ Perform relative transformations for child (Next BP) and store as global
+
+	2020-03-03
+	Added basic support for independent transformations: Single helix
+	* Required Turn calculations and compesations
+	
+	Added support for whole structure
+	
+
+
+V9
+Started 2020-03-02
+Requirements:
++ Fix starting point				* Done
++ Support for parallel helices		* Done
+
+
+V8
+Finished 2020-03-02
++ Bugfixes on staple clean 
+
+V7
+Started 2020-02-21
+Requirements:
++ Save stapple data in cadnano file
++ Identify touching (or about to touch) link points             
++ Mark crossovers and create list of staples 
+
+
+V6
+Started 2020-02-20
+Requirements:
++ Identify absolute orientation of BP and staples (link) points * Done
++ Identify touching (or about to touch) link points             * Next version
++ Mark crossovers and create list of staples                    * Next version
+
+
+ *** Number of the rods has something to do with coordinates!
+
+    Requirements promoted to next version
+    2020-02-20:
+    Multiple bugs fixed: Rod number depends of coordinates.
+    Reestructuration of objects were required to get rid of the issue
+    
+    
+
+Finished  2020-02-20
+
+
+
+V5
+Started 2020-02-18
+Requirements:
++ Save scaffold data in cadnano file                * Done + bugs
+
+    2020-02-19:
+    Scaffold successfully stored in cadnano file
+    Cadnano is able to open it
+    Reading error happens when using a big structure,
+    mainly when adding Z layers
+
+    It is required to fix coordinates, to avoid negative ones.
+    Probably, recompute coordinates before writing file, without
+    moving geometries at all
+
+    It is desired to allow the design get rid of blender
+    construction functions, and only use them just to 
+    previsualize final result (this could make the scripts
+    independent of Blender, and can lead to an stand alone 
+    program)
+Finished 2020-02-19
+
+
+
+V4
+Started 2020-02-17
+Requirements:
++ Create turn functions for up XY                   * Done
++ Create turn functions for Z up and down           * Done
+Finished 2020-02-18
+
+
+V3  
+Started 2020-02-14
+Requirements:
++ Add contiuous scaffold, connected with previous	* Done
++ Determine absolute orientation of the BP			* Done
++ Determine automatic turn. Function required to 	* Done
+  know when to stop 
++ Create turn functions for XY projection			* Done (only down)
++ Create turn functions for Z projection			* For next version
+
+Issues: Blender requires window update to obtain the 
+coordinates. The angle calculation was done taking
+this into account.
+
+Finished 2020-02-17
+
+
+
+
+
+
+V2 
+Finished 2020-02-14
+Solution for Blender performance
+- Shapes are reutilized or created from scratch when required
+- Automatic assignation of materials
+- Function AddRow created with correct parameters
+
+* It is required a function for correct turns. Currently setDirection 
+  does, manually. Previous orientation is lost. 
+
+
+V1
+Basic creation of geometry
+- Issues with Blender performance when the shapes are created
