@@ -145,7 +145,7 @@ class HelixRod():
                             None
 
         ## Repeat to reduce lines                            
-    def ReduceStaples2(this):
+    def ReduceStaplesLines(this):
         Listas = [ this.YNS, this.YPS, this.ZNS, this.ZPS ]
         for Lista in Listas:
             if Lista != None:
@@ -156,6 +156,67 @@ class HelixRod():
                             #print("")
                         except:
                             None
+
+        ## Repeat to reduce lines   
+                                 
+    def ReduceStaplesCrossings(this):
+        Listas = [ this.YNS, this.YPS, this.ZNS, this.ZPS ]
+        for Lista in Listas:
+            if Lista != None:
+                crossingInd = []
+                crossingStp = []
+                crossingVote = []
+                for staple in Lista:
+                    cs = staple.getCrossing()
+                    if cs != -1 :
+                        crossingInd.append(cs)
+                        crossingStp.append(staple)
+                        crossingVote.append(0)
+                
+                ## here the crossings are now ready, so, we need to choose which of them 
+                ## are going to be preserved or which are going to be history
+                print("Reducing crossings..." + str(len(crossingVote)))
+                ### All data is in crossingInd and according to them, choose to preserve or not in crossingStp
+                if len(crossingVote) > 2 :
+                    crossingVote[0] = -4
+                    crossingVote[-1] = -4
+
+                    for k in range(1,len(crossingInd)-1) :
+                        k2 = len(crossingInd)-1-k
+                        d1 = abs(crossingInd[k] - crossingInd[k-1])
+                        d2 = abs(crossingInd[k] - crossingInd[k-2])
+
+                        X1 = min((d1,d2)) - 0.5 * crossingVote[k-1]
+
+
+                        d3 = abs(crossingInd[k2] - crossingInd[k2-1])
+                        d4 = abs(crossingInd[k2] - crossingInd[k2-2])
+
+                        X2 = min((d3,d4)) - 0.5 * crossingVote[k2+1]
+
+                        crossingVote[k] = X1
+                        if k != k2:
+                            crossingVote[k2] = X2
+                    
+
+                    ## Once finished the votings, we can select them, which are maximum and then erase the others
+                    maximus = max(crossingVote)
+                    print(crossingInd)
+                    print(crossingVote)
+                    for k in range(0,len(crossingInd)) :
+                        if crossingVote[k] < maximus:
+                            print("Merge into lines " + str(crossingVote[k]))
+                            crossingStp[k].tryFuseStaple(14)
+
+                    
+
+
+
+                    
+                    
+
+
+                                              
 
     def checkConflicts(this):
         #print("Checking conflicts...")
@@ -225,13 +286,14 @@ class HelixRod():
                 Lista.append(P)                                   
                 
         return Lista
-    
+
+
+
+
+
     def analyzeStaple(this):
         ### It's a function that analyzes the staples and take a decision
         ### To approve or remove staple
-        
-        
-        
         
         if this.YNS == None:
             this.YNS = []

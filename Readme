@@ -1,7 +1,12 @@
 Blender Cadnano Helper
 
 
-
+V16
+03/16/2020 03:33:04 PM -0400
+V16 Next merging state:
+Purpose: Check multiple crossings between two strands.
+Select which preserve taking into account the distance between
+crossings
 
 
 V15

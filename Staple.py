@@ -53,13 +53,37 @@ class Staple():
     Merged = False
 
     Visited = False
+
+    Lined = False
     
+    def getCrossing(this):
+        Retorno = -1
+        if this.Lined == False:
+            if len(this.FirstStrand) > 0 and len(this.SecondStrand) >  0 :
+                Retorno = this.Crossing
+        
+        return Retorno
 
     def getMinLength(this):
         minLength = -1
 
         if this.isEnabled():
+            # this.First_1 = this.FirstStrand[0]
+            # this.Last_1 = this.FirstStrand[-1]
+            # this.First_2 = this.SecondStrand[0]
+            # this.Last_2 = this.SecondStrand[-1]
+            # if len(this.FirstStrand) > 0:
+            #     this.First_1 = this.FirstStrand[0]
+            #     this.Last_1 = this.FirstStrand[-1]
+
+            # if len(this.SecondStrand) > 0:
+            #     this.First_2 = this.SecondStrand[0]
+            #     this.Last_2 = this.SecondStrand[-1]
+
             try:
+                
+                
+
                 D1 = this.LengthFirst_1 = abs( this.First_1.getX() - this.Crossing  )
                 D2 = this.LengthFirst_2 = abs( this.First_2.getX() - this.Crossing  )
                 D3 = this.LengthLast_1 = abs( this.Last_1.getX() - this.Crossing  )
@@ -204,10 +228,10 @@ class Staple():
         
         ###  Remember HERE scaffold have opposite directions to staples
         
-        this.getMinLength()
+        
 
         if len(this.FirstStrand) > 0 and len(this.SecondStrand) > 0 :
-
+            this.getMinLength()
             if this.Enabled :
                 P1 = this.growStrand (this.FirstStrand, this.First_1, this.Last_1, this.TouchingFirst_1, this.TouchingLast_1)
                 this.First_1 = P1[0]
@@ -272,19 +296,23 @@ class Staple():
     
     def extTouch(this, Touching, BP):
         if BP != None:
-            if BP == this.getFirst1() :
-                this.TouchingFirst_1 = Touching
-            if BP == this.getFirst2() :
-                this.TouchingFirst_2 = Touching
+            if len(this.FirstStrand) > 0:
+                if BP == this.getFirst1() :
+                    this.TouchingFirst_1 = Touching
+                if BP == this.getLast1() :
+                    this.TouchingLast_1 = Touching 
 
-            if BP == this.getLast1() :
-                this.TouchingLast_1 = Touching 
-            if BP == this.getLast2() :
-                this.TouchingLast_2 = Touching 
+            if len(this.SecondStrand) > 0:
+                if BP == this.getFirst2() :
+                    this.TouchingFirst_2 = Touching
+
+                if BP == this.getLast2() :
+                    this.TouchingLast_2 = Touching 
 
 
     def getFirst1(this):
         #print(this.FirstStrand[0].getX())
+        
         return this.FirstStrand[0]
     
     def getFirst2(this):
@@ -399,10 +427,11 @@ class Staple():
         ### And probably merge it with another when it 
         ### is too short
 
+        
         this.MinStaple = Minstp
-
+        
         MinD =  this.getMinLength()
-
+        
         if MinD < this.MinStaple:
             print("Staple must be fused: " + str(MinD))
 
@@ -418,18 +447,21 @@ class Staple():
 
             ## Let's do this:
 
-            if this.First_1 != None and this.First_2 != None and this.Last_1 != None and this.Last_2 != None:
+            if this.First_1 != None and this.First_2 != None and this.Last_1 != None and this.Last_2 != None and len(this.FirstStrand) > 0 and len(this.SecondStrand) > 0:
                 
+                #this.First_1 = this.FirstStrand[0]
+                #this.First_2 = this.SecondStrand[0]
+                
+                #this.Last_1 = this.FirstStrand[-1]
+                #this.Last_2 = this.SecondStrand[-1]
+
                 ## Itera first strand
                 BeginBP = this.First_1
                 EndBP = this.Last_2
 
                 this.FirstStrand.clear()
-
                 this.FirstStrand.append(BeginBP)
-
                 Siguiente = BeginBP.getPrev()
-
                 
                 while Siguiente != EndBP:
                     this.FirstStrand.append(Siguiente)
@@ -437,7 +469,14 @@ class Staple():
 
                 this.FirstStrand.append(EndBP)
 
+                print("Fusion : " + str(BeginBP.getRod()) + " , " + str(BeginBP.getX()))
+                indices = []
+                for BP in this.FirstStrand:
+                    indices.append(BP.getX())
+                print(indices)
+                
                 ## Itera second strand
+                
                 BeginBP = this.First_2
                 EndBP = this.Last_1
 
@@ -453,6 +492,13 @@ class Staple():
                     Siguiente = Siguiente.getPrev()
                 
                 this.SecondStrand.append(EndBP)
+
+                print("Fusion : " + str(BeginBP.getRod()) + " , " + str(BeginBP.getX()))
+                indices = []
+                for BP in this.FirstStrand:
+                    indices.append(BP.getX())
+                print(indices)
+
                 ## Switch places
 
                 #BPT = this.Last_1
@@ -635,7 +681,7 @@ class Staple():
                     if Rows != None :
                         if Rows[-1].getRod() == BP1.getRod() :
                             print("Preparing to fuse vectors A")
-                            this.fuseVectorsAppend(Rows, this.FirstStrand)
+                            this.fuseVectorsAppend2(Rows, this.FirstStrand)
                             #this.FirstStrand.clear()
                             Rows.clear()
                             Exito = True

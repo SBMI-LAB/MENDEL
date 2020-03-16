@@ -591,7 +591,7 @@ class HelixCad():
     ### Reference is "The Last" and go backwards    
 
     def stepGrowStaples(this):
-        for n in range(100):
+        for n in range(7):
             for staple in this.StapleList:
                 ### Grow staples 
                 staple.growStapleStep()
@@ -606,19 +606,28 @@ class HelixCad():
 
         minStaple = 1
 
+        #for helixRod in this.Helices:
+        #    if helixRod.isEmpty() == False:
+        #        helixRod.ReduceStaples(minStaple)   
+
+
+        #for helixRod in this.Helices:
+        #    if helixRod.isEmpty() == False:
+        #        helixRod.ReduceStaplesLines() 
+
+
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
-                helixRod.ReduceStaples(minStaple)   
+                helixRod.ReduceStaplesCrossings() 
 
 
-        
+        #for helixRod in this.Helices:
+        #    if helixRod.isEmpty() == False:
+        #        helixRod.ReduceStaplesLines() 
 
-        for helixRod in this.Helices:
-            if helixRod.isEmpty() == False:
-                helixRod.ReduceStaples2() 
-
-        #for staple in this.StapleList:
-        #    staple.growStapleStep()
+        #for k in range(7):
+        #    for staple in this.StapleList:
+        #        staple.growStapleStep()
         
         ### HERE 
         """

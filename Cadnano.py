@@ -403,7 +403,7 @@ class Cadnano():
 
             this.HelCad.AnalyzeStaples()
 
-            this.HelCad.solveConflicts()
+            #this.HelCad.solveConflicts()
 
             this.HelCad.stepGrowStaples()
 
