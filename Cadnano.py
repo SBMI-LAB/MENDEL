@@ -65,7 +65,12 @@ class Cadnano():
 
     Analyzed = False
 
+    Draft = False
+
     
+
+    def setDraft(this):
+        this.Draft = True
     
     def configure(this):
         names = False
@@ -107,6 +112,7 @@ class Cadnano():
 
     def StartAt(this, n):
         this.initial = n
+        #this.AddBP()
         
     def AddHelix(this,x,y,z,angle):
         K = Scaff()    
@@ -122,8 +128,134 @@ class Cadnano():
         this.prevBP = K
 
         K.getAngleX()		
-		
-		
+
+    def gotoX(this, X):
+        ### Adds enough elements to move to the respective X coordinate
+        P = this.prevBP.getXYZ()
+        pX = P[0]
+        
+        d = abs(X-pX)
+        oz = this.prevBP.getOz()
+
+        if oz == 0 or oz == 360:
+            if pX > X:
+                this.AddTurn_Y_down()
+        else:
+            if pX < X:
+                this.AddTurn_Y_down()
+
+        this.AddMore(d)
+
+    def gotoXUp(this, X):
+        ### Adds enough elements to move to the respective X coordinate
+        P = this.prevBP.getXYZ()
+        pX = P[0]
+        
+        d = abs(X-pX)
+        oz = this.prevBP.getOz()
+
+        if oz == 0 or oz == 360:
+            if pX > X:
+                this.AddTurn_Y_up()
+        else:
+            if pX < X:
+                this.AddTurn_Y_up()
+
+        this.AddMore(d)
+        
+
+    def AddRect(this, width , height) :
+        ### Adds a rectangule forward with an specific size
+        P = this.prevBP.getXYZ()
+        pX = P[0]
+        pY = -P[1]
+
+        dX = pX + width
+        dY = pY + height*2
+
+        Exito = False
+
+        height = width*height
+
+        print("Creating system..." + str(height))
+
+        while Exito == False:
+            C = this.prevBP.getXYZ()
+            CX = C[0]
+            CY = -C[1]
+            
+            oz = this.prevBP.getOz()
+
+            print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
+
+            if oz == 0 or oz == 360:
+                if CX < dX : ### I am in the range
+                    this.AddBP()
+                else:
+                    if CY == dY:
+                        Exito = True
+                    else:
+                        this.AddTurn_Y_down()
+
+            else:
+                if CX > pX : ### I am in the range
+                    this.AddBP()
+                else:
+                    if CY == dY:
+                        Exito = True
+                    else:
+                        this.AddTurn_Y_down()         
+
+
+
+
+
+
+    def AddRectUp(this, width , height) :
+        ### Adds a rectangule forward with an specific size
+        P = this.prevBP.getXYZ()
+        pX = P[0]
+        pY = P[1]
+
+        dX = pX + width
+        dY = pY + height*2
+
+        Exito = False
+
+        
+
+        print("Creating system..." + str(height))
+
+        while Exito == False:
+            C = this.prevBP.getXYZ()
+            CX = C[0]
+            CY = C[1]
+            
+            oz = this.prevBP.getOz()
+
+            print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
+
+            if oz == 0 or oz == 360:
+                if CX < dX : ### I am in the range
+                    this.AddBP()
+                else:
+                    if CY == dY:
+                        Exito = True
+                    else:
+                        this.AddTurn_Y_up()
+
+            else:
+                if CX > pX : ### I am in the range
+                    this.AddBP()
+                else:
+                    if CY == dY:
+                        Exito = True
+                    else:
+                        this.AddTurn_Y_up()         
+
+
+
+            
 
         
     def AddBP(this):
@@ -137,6 +269,7 @@ class Cadnano():
             this.firstTime = True
             K.AddObj((this.initial,0,0))
             this.currentAngle= this.initial*this.pAng
+            this.prevBP = K
         else:
             K.SetAngle(this.pAng)
             K.AddObj((1,0,0))
@@ -154,12 +287,15 @@ class Cadnano():
                     
 
     def AddMore(this, n):
-        for k in range(n-1):
+        for k in range(n):
             this.AddBP();
+            
+            
             #bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1) 
             #lastAng = this.GetXAngle()
             #print("R:")
             #print (lastAng)
+
             
     
     def GetXAngle(this):
@@ -172,17 +308,17 @@ class Cadnano():
         
         return tt
     
-    def AddTurn_Z_down(this,n):
-        this.AddTurn_Y(n,0)    
+    def AddTurn_Z_down(this):
+        this.AddTurn_Y(0)    
     
-    def AddTurn_Z_up(this,n):
-        this.AddTurn_Y(n,180)
-        
-    def AddTurn_Y_down(this,n):
-        this.AddTurn_Y(n,270)
+    def AddTurn_Z_up(this):
+        this.AddTurn_Y(180)
+    
+    def AddTurn_Y_down(this):
+        this.AddTurn_Y(270)
 
-    def AddTurn_Y_up(this,n):
-        this.AddTurn_Y(n,90)   
+    def AddTurn_Y_up(this):
+        this.AddTurn_Y(90)   
         
     def testingAngle(this,A,B):
         #compare distance between angles
@@ -267,11 +403,11 @@ class Cadnano():
 #        this.currentAngle = 0
 
         
-    def AddTurn_Y(this,n, targetAngle):
+    def AddTurn_Y(this, targetAngle):
         ### Add n BP and then continue
         ### until turn down in Y direction
         #targetAngle = 270
-        this.AddMore(n)
+        
         
         #testAng = abs(this.prevBP.getAngleX()-targetAngle)
         testAng = abs(this.GetXAngle()-targetAngle)
@@ -401,21 +537,23 @@ class Cadnano():
             this.HelCad.setLast(this.prevBP)
             this.HelCad.buildRods()
 
-            this.HelCad.AnalyzeStaples()
 
-            #this.HelCad.solveConflicts()
+            if this.Draft == False:
+                this.HelCad.AnalyzeStaples()
 
-            this.HelCad.stepGrowStaples()
+                #this.HelCad.solveConflicts()
+
+                this.HelCad.stepGrowStaples()
 
 
-            this.HelCad.reduceStaples()
+                this.HelCad.reduceStaples()
 
-            #this.HelCad.stepGrowStaples()
-            
+                #this.HelCad.stepGrowStaples()
+                
 
-            this.HelCad.applyStaples()
+                this.HelCad.applyStaples()
 
-            #this.HelCad.CleanStaple()
+                #this.HelCad.CleanStaple()
 
 
             this.Analyzed = True
@@ -454,6 +592,7 @@ class Cadnano():
         render.RenderCylinders(res)
 
     def RenderRibbons(this):
+        
         this.analyzeStructure()
         render = RenderCad()
         render.setHelices(this.HelCad)

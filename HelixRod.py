@@ -181,7 +181,7 @@ class HelixRod():
                     crossingVote[0] = -4
                     crossingVote[-1] = -4
 
-                    for k in range(1,len(crossingInd)-1) :
+                    for k in range(1,round(len(crossingInd)/2)) :
                         k2 = len(crossingInd)-1-k
                         d1 = abs(crossingInd[k] - crossingInd[k-1])
                         d2 = abs(crossingInd[k] - crossingInd[k-2])
@@ -201,10 +201,11 @@ class HelixRod():
 
                     ## Once finished the votings, we can select them, which are maximum and then erase the others
                     maximus = max(crossingVote)
+                    umbral = maximus*0.5
                     print(crossingInd)
                     print(crossingVote)
                     for k in range(0,len(crossingInd)) :
-                        if crossingVote[k] < maximus:
+                        if crossingVote[k] < umbral:
                             print("Merge into lines " + str(crossingVote[k]))
                             crossingStp[k].tryFuseStaple(14)
 

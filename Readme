@@ -7,6 +7,10 @@ V16 Next merging state:
 Purpose: Check multiple crossings between two strands.
 Select which preserve taking into account the distance between
 crossings
+03/16/2020 05:16:19 PM -0400
+Reducing crossing algorithm work initially.
+Needs extra work for smarter decisions.
+
 
 
 V15
