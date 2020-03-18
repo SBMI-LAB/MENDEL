@@ -76,7 +76,7 @@ class HelixRod():
         this.maxStaple += 1  
         
 
-    def setStapleNew(this, pos, OtherHelix):
+    def setStapleNew(this, pos, OtherHelix, Parallel):
         ### This new concept will create a staple object instead
         ### of just the list of positions.
         ### 
@@ -85,7 +85,12 @@ class HelixRod():
         
         SObj = Staple()
         SObj.setRelations(this, OtherHelix)
-        K = SObj.setStaple(pos, this.getRow(), OtherHelix.getRow())
+        K = False
+        if Parallel:
+            K = SObj.setStapleParallel(pos, this.getRow(), OtherHelix.getRow(), Parallel)
+            print("Staple: (" + str(this.getY()) + ", " + str(this.getZ())  + "), pos: " +str(pos))
+        else:
+            K = SObj.setStaple(pos, this.getRow(), OtherHelix.getRow(), Parallel)
         
 
         if K == False:

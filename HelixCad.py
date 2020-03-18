@@ -6,6 +6,8 @@ import math
 class HelixCad():
     filename = "output.json"
     
+    Parallel = False
+
     Last = None
     Initial = None
     
@@ -26,6 +28,24 @@ class HelixCad():
     # Accesed, and indexed correctly
     # That's the reason they are accesed from the initial
     
+    def SetParallel (this, Parallel):
+        if Parallel == True:
+            this.Parallel = True
+
+    def setElements(this, elements):
+        this.ElementList = elements
+        ### Analyze max position
+        k = 0
+        for BP in this.ElementList:
+            pX = BP.getXYZCenter()
+            k += 1
+            if this.maxPosition < pX[0]:
+                this.maxPosition = round(pX[0])
+
+        this.maxPosition = math.ceil(this.maxPosition/32)*32
+        print("Total of " + str(k) + " elements")
+        print("Max positions X: " + str(this.maxPosition))        
+
     def setTailLen(this, n):
         this.tailLen = n
 
@@ -535,7 +555,7 @@ class HelixCad():
                                         # ~ StapleRod.append(Rod)
                                         
                                         # ~ Row1.setStaple(x,Row2)
-                                        TT = Row1.setStapleNew(x,Row2)
+                                        TT = Row1.setStapleNew(x,Row2, this.Parallel)
                                         Attempts += 1
                                         if TT != False:
                                             this.StapleList.append( TT )

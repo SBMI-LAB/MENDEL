@@ -67,6 +67,9 @@ class Cadnano():
 
     Draft = False
 
+    Elements = None
+
+    Parallel = False
     
 
     def setDraft(this):
@@ -115,6 +118,7 @@ class Cadnano():
         #this.AddBP()
         
     def AddHelix(this,x,y,z,angle):
+        this.Parallel = True
         K = Scaff()    
         y = -y    
         K.setId(this.c_id)
@@ -126,6 +130,10 @@ class Cadnano():
         K.AddObj((x,2*y,2*z))
         this.currentAngle= this.initial*this.pAng
         this.prevBP = K
+
+        if this.Elements == None:
+            this.Elements = []
+        this.Elements.append(this.prevBP)
 
         K.getAngleX()		
 
@@ -263,6 +271,11 @@ class Cadnano():
         K.setId(this.c_id)
         this.c_id = this.c_id+1
         K.setMode(this.mode)
+
+        if this.Elements == None:
+            this.Elements = []
+
+
         if (this.firstTime == False):
             K.SetAngle(this.initial*this.pAng)
             #K.SetXAng(0)
@@ -277,6 +290,9 @@ class Cadnano():
             this.currentAngle= this.currentAngle+this.pAng
         
         this.prevBP = K
+
+        this.Elements.append(this.prevBP)
+
         if (this.currentAngle >= 360):
             this.currentAngle = this.currentAngle - 360
         
@@ -534,7 +550,10 @@ class Cadnano():
 
         if this.Analyzed == False :
             this.HelCad = HelixCad()
-            this.HelCad.setLast(this.prevBP)
+            this.HelCad.SetParallel(this.Parallel)
+            #this.HelCad.setLast(this.prevBP)
+            this.HelCad.setElements(this.Elements)
+            
             this.HelCad.buildRods()
 
 
@@ -546,7 +565,12 @@ class Cadnano():
                 this.HelCad.stepGrowStaples()
 
 
-                this.HelCad.reduceStaples()
+                if this.Parallel == False:
+                    this.HelCad.reduceStaples()
+                else:
+                    this.HelCad.stepGrowStaples()
+
+                #this.HelCad.reduceStaples()
 
                 #this.HelCad.stepGrowStaples()
                 

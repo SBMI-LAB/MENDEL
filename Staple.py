@@ -55,6 +55,8 @@ class Staple():
     Visited = False
 
     Lined = False
+
+    Parallel = False
     
     def getCrossing(this):
         Retorno = -1
@@ -134,7 +136,7 @@ class Staple():
         return this.Rod2
 
     
-    def setStaple (this, cross, row1, row2) : 
+    def setStaple (this, cross, row1, row2, Parallel) : 
         this.Crossing = cross
         
         Exito = True
@@ -205,7 +207,99 @@ class Staple():
         this.Enabled = Exito
         
         return Exito
+
+    def setStapleParallel (this, cross, row1, row2, Parallel) : 
+        this.Crossing = cross
+
+        this.Parallel = Parallel
         
+        Exito = True
+        
+        ### First and last is defined in terms of the orientation
+        ### This gives a more control about the geometry
+
+        #### Only one cross is assigned. The other will be just parallel
+        ####
+        """
+
+        -----*-----
+             \
+        -----*-----
+
+        """
+        
+        this.Crossing = cross
+
+        bp_11 = row1[cross]
+        bp_12 = row1[cross+1]
+        
+        bp_21 = row2[cross]
+        bp_22 = row2[cross+1]
+        
+        caso = False
+        
+        if bp_11.getOz() == 0 or bp_11.getOz() == 360:
+            caso = not caso
+        
+        if caso:
+            this.First_1 = bp_22
+            this.Last_1  = bp_11
+            
+            this.First_2 = bp_12
+            this.Last_2  = bp_21
+        else:
+            this.First_1 = bp_22
+            this.Last_1  = bp_11
+            
+            this.First_2 = bp_12
+            this.Last_2  = bp_21                                 
+        
+
+        this.First_1 = bp_22
+        this.Last_1  = bp_11
+        
+        this.First_2 = bp_22
+        this.Last_2  = bp_22
+
+        try:
+
+            this.Conflicts = []
+            if bp_11.getStaple() != None :
+                this.Conflicts.append(bp_11.getStaple())
+            if bp_12.getStaple() != None :
+                this.Conflicts.append(bp_12.getStaple())
+            if bp_21.getStaple() != None :
+                this.Conflicts.append(bp_21.getStaple())
+            if bp_22.getStaple() != None :
+                this.Conflicts.append(bp_22.getStaple())
+
+
+            if bp_11.getStaple() != None or bp_12.getStaple() != None or bp_21.getStaple() != None or bp_22.getStaple() != None :
+                Exito = False           
+            else:
+                this.r1 = this.First_1.getRod()
+                this.r2 = this.Last_1.getRod()
+                
+                this.FirstStrand.append(this.First_1)
+                this.FirstStrand.append(this.Last_1)
+                
+                this.SecondStrand.append(this.First_2)
+                this.SecondStrand.append(this.Last_2)
+                
+                bp_11.setStaple(this)
+                bp_21.setStaple(this)
+                
+                bp_12.setStaple(this)
+                bp_22.setStaple(this)
+            
+        except: 
+            Exito = False
+        
+        this.Enabled = Exito
+        
+        return Exito 
+
+
     def hasConflicts(this):
         if len(this.Conflicts) > 0 :
             return True
@@ -218,8 +312,16 @@ class Staple():
     def setTurn(this, turn1, turn2):
         this.Turn1 = turn1
         this.Turn2 = turn2
-        
+    
+    
     def growStapleStep(this):
+        if this.Parallel == True:
+            this.growStapleStep_2()
+        else:
+            this.growStapleStep_1()
+
+
+    def growStapleStep_1(this):
  
         
         ### Attempts to grow the staple. If it touches another
@@ -227,9 +329,6 @@ class Staple():
         ## The neighbor staples can be used to decide merge or not
         
         ###  Remember HERE scaffold have opposite directions to staples
-        
-        
-
         if len(this.FirstStrand) > 0 and len(this.SecondStrand) > 0 :
             this.getMinLength()
             if this.Enabled :
@@ -238,6 +337,41 @@ class Staple():
                 this.Last_1 = P1[1]
                 this.TouchingFirst_1 = P1[2]
                 this.TouchingLast_1 = P1[3]  
+
+                P2 = this.growStrand (this.SecondStrand, this.First_2, this.Last_2, this.TouchingFirst_2, this.TouchingLast_2)
+                this.First_2 = P2[0]
+                this.Last_2 = P2[1]
+                this.TouchingFirst_2 = P2[2]
+                this.TouchingLast_2 = P2[3]
+
+
+    def growStapleStep_2(this):
+ 
+        
+        ### Attempts to grow the staple. If it touches another
+        ### It will mark the other as neighbor
+        ## The neighbor staples can be used to decide merge or not
+        
+        ###  Remember HERE scaffold have opposite directions to staples
+       
+            #this.getMinLength()
+        if this.Enabled :
+
+            if len(this.FirstStrand) > 0 and this.Parallel == True:
+
+                this.First_1 = this.FirstStrand[0]
+                this.Last_1 = this.FirstStrand[-1]
+
+                P1 = this.growStrand (this.FirstStrand, this.First_1, this.Last_1, this.TouchingFirst_1, this.TouchingLast_1)
+                this.First_1 = P1[0]
+                this.Last_1 = P1[1]
+                this.TouchingFirst_1 = P1[2]
+                this.TouchingLast_1 = P1[3]  
+
+            if len(this.SecondStrand) > 0 and this.Parallel == False:
+                
+                this.First_1 = this.SecondStrand[0]
+                this.Last_1 = this.SecondStrand[-1]
 
                 P2 = this.growStrand (this.SecondStrand, this.First_2, this.Last_2, this.TouchingFirst_2, this.TouchingLast_2)
                 this.First_2 = P2[0]

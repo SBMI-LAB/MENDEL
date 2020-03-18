@@ -107,9 +107,21 @@ class RenderCad:
 
 
 
-    def RenderStrand(this, Lista):
+    def RenderStrand(this, SC_Coord, mat):
         ### Function that renders the strand as a ribbon
         print("Rendering strand")
+
+
+        depth = 0.5
+        res = 4
+
+        obj2 = this.createSpline(SC_Coord, 2, False)         
+        bpy.context.scene.collection.objects.link(obj2)
+        #obj2.data.bevel_object = obj1
+        obj2.data.bevel_depth = depth
+        obj2.data.bevel_resolution = res
+        bpy.data.objects[-1].data.materials.append(bpy.data.materials[mat])
+        obj2.data.twist_mode = 'Z_UP'
 
 
     def createSpline(this, coords_list, resolution, closed):
@@ -195,24 +207,39 @@ class RenderCad:
         ### Create the Scaffold:
         SC_Coord = []
 
-        
+        PC = None
 
         for BP in this.Helices.getElements() :
             ### Basically, just draw them
             P = BP.getPosScaffold()
             C = [  P[0], P[1], P[2] ]
+
+            if PC == None:
+                PC = C
+
+            if abs(PC[0] - C[0]) > 1:
+                ### Create a scaffold
+                this.RenderStrand(SC_Coord,0)
+                SC_Coord.clear()
+
+            PC = C
+
             SC_Coord.append( C )
 
+
+
+        this.RenderStrand(SC_Coord,0)
+        """
         obj2 = this.createSpline(SC_Coord, 2, False)         
         bpy.context.scene.collection.objects.link(obj2)
         #obj2.data.bevel_object = obj1
         obj2.data.bevel_depth = depth
         obj2.data.bevel_resolution = res
-
-
         bpy.data.objects[-1].data.materials.append(bpy.data.materials[0])
         #obj2.data.twist_mode = 'Z_UP'
 
+
+        """
         ### Scaffold created
 
         for staplec in this.Helices.getStapleList():
