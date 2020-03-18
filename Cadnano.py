@@ -567,6 +567,7 @@ class Cadnano():
 
                 if this.Parallel == False:
                     this.HelCad.reduceStaples()
+                    print("Reducing staples")
                 else:
                     this.HelCad.stepGrowStaples()
 

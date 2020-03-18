@@ -626,19 +626,19 @@ class HelixCad():
 
         minStaple = 1
 
-        #for helixRod in this.Helices:
-        #    if helixRod.isEmpty() == False:
-        #        helixRod.ReduceStaples(minStaple)   
-
-
-        #for helixRod in this.Helices:
-        #    if helixRod.isEmpty() == False:
-        #        helixRod.ReduceStaplesLines() 
+        for helixRod in this.Helices:
+            if helixRod.isEmpty() == False:
+                helixRod.ReduceStaples(minStaple)   
 
 
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
-                helixRod.ReduceStaplesCrossings() 
+                helixRod.ReduceStaplesLines() 
+
+
+        #for helixRod in this.Helices:
+        #    if helixRod.isEmpty() == False:
+        #        helixRod.ReduceStaplesCrossings() 
 
 
         #for helixRod in this.Helices:
