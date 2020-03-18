@@ -11,6 +11,8 @@ crossings
 Reducing crossing algorithm work initially.
 Needs extra work for smarter decisions.
 
+03/16/2020 07:08:21 PM -0400
+New primitives added to build shapes based on coordinates.
 
 
 V15

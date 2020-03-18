@@ -129,7 +129,7 @@ class Cadnano():
 
         K.getAngleX()		
 
-    def gotoX(this, X):
+    def GotoX(this, X):
         ### Adds enough elements to move to the respective X coordinate
         P = this.prevBP.getXYZ()
         pX = P[0]
@@ -146,7 +146,7 @@ class Cadnano():
 
         this.AddMore(d)
 
-    def gotoXUp(this, X):
+    def GotoXUp(this, X):
         ### Adds enough elements to move to the respective X coordinate
         P = this.prevBP.getXYZ()
         pX = P[0]
