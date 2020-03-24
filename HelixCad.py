@@ -635,6 +635,9 @@ class HelixCad():
             if helixRod.isEmpty() == False:
                 helixRod.ReduceStaplesLines() 
 
+        #for helixRod in this.Helices:
+        #    if helixRod.isEmpty() == False:
+        #        helixRod.ReduceStaples(2)
 
         #for helixRod in this.Helices:
         #    if helixRod.isEmpty() == False:
