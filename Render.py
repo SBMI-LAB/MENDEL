@@ -290,6 +290,28 @@ class RenderCad:
             coordN.append( C )
 
 
+    def renderAsyStrand(this, g, Coords, mat):
+        ### Try to create a path with the current strand
+        ### it is a 2D projection. What matters here?
+        print("Rendering asy strand")
+        
+        material = ["blue", "red", "yellow", "green"]
+
+
+        PP = "draw("
+        Initial = True
+        for C in Coords:
+            if Initial == False:
+                PP = PP + " -- "
+            PP = PP + "(" + str(C[1]) + "," + str(C[0]) + ")"
+            Initial = False
+        PP = PP + ", marker=MarkFill[0], "+str(material[mat])+");"
+
+        g.send(PP)
+
+
+
+
     def RenderPDF(this, filename):
 
         Exito = False
@@ -304,10 +326,79 @@ class RenderCad:
             
 
             g.size(300)
-            g.send("draw(unitsquare)")
-            g.fill("unitsquare, blue")
-            g.clip("unitcircle")
-            g.label("\"$O$\", (0,0), SW")
+
+
+            #g.send("draw(unitsquare)")
+            #g.fill("unitsquare, blue")
+            #g.clip("unitcircle")
+            #g.label("\"$O$\", (0,0), SW")
+
+            ### Starting picture
+            
+            #Starting scaffolds
+            SC_Coord = []
+
+            PC = None
+
+            for BP in this.Helices.getElements() :
+                ### Basically, just draw them
+                P = BP.getPosScaffold()
+                C = [  P[0], P[1], P[2] ]
+
+                if PC == None:
+                    PC = C
+
+                if abs(PC[0] - C[0]) > 1:
+                    ### Create a scaffold
+                    this.renderAsyStrand(g, SC_Coord,0)
+                    SC_Coord.clear()
+
+                PC = C
+
+                SC_Coord.append( C )
+            this.renderAsyStrand(g, SC_Coord,0)
+            #End scaffolds
+
+            print("End scaffolds")
+
+
+            print("Start staples")
+            stpInd = 1
+
+            for staplec in this.Helices.getStapleList():
+                
+                if staplec.isEnabled():
+                    Listas = []
+                    Listas.append(staplec.getFirstStrand())
+                    Listas.append(staplec.getSecondStrand())
+
+                    for lista in Listas :
+                        if len(lista) > 0:
+                            coordN = []
+                            
+                            BP = lista[0]
+                            BP2 = BP.getNext()
+                            #this.addIntermediate(BP, BP2, coordN)
+                            
+                            for BP in lista :
+                                ### Basically, just draw them
+                                P = BP.getPosStp()
+                                C = [  P[0], P[1], P[2] ]
+                                coordN.append( C )
+                            
+                            BP = lista[-1]
+                            BP2 = BP.getPrev()
+
+                            this.renderAsyStrand(g, coordN,stpInd)
+                            #this.addIntermediate(BP, BP2, coordN)
+
+                            stpInd += 1
+
+                            if stpInd == 4:
+                                stpInd = 1
+
+
+            print("End staples")
             
             g.finish()
 
