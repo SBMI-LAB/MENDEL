@@ -295,19 +295,70 @@ class RenderCad:
         ### it is a 2D projection. What matters here?
         print("Rendering asy strand")
         
-        material = ["blue", "red", "yellow", "green"]
+        material = ["blue", "red", "lightolive", "green"]
 
+        LBP = None
+
+        dy = 1
+
+        scale = 10
 
         PP = "draw("
         Initial = True
-        for C in Coords:
+        for EL in Coords:
             if Initial == False:
                 PP = PP + " -- "
+
+            C = EL[0]
+
+            C[0] = C[0] + dy
+
+            BP = EL[1]
+            LBP = BP
+
+            BPC =  BP.getXYZCenter()[1]
+            #print (BP)
+            RD = BP.getRod()
+
+            CT = C[1]
+            
+            if C[1] > BPC:
+                C[1] =  -1
+                CT =   1
+            else:
+                C[1] =  1
+                CT =  - 1
+            
+
+            C[1] = C[1] + RD*4
+            CT = CT + RD*4
+
+            C[0] = C[0] * scale
+            C[1] = C[1] * scale
+            CT = CT * scale
+
             PP = PP + "(" + str(C[1]) + "," + str(C[0]) + ")"
+
+            if mat == 0:
+                PP = PP + "--(" + str(CT) + "," + str(C[0]) + ")" + "--(" + str(C[1]) + "," + str(C[0]) + ")"
+
+
             Initial = False
         PP = PP + ", marker=MarkFill[0], "+str(material[mat])+");"
 
         g.send(PP)
+
+        if LBP != None:
+            ## Print label
+            R = LBP.getRod()*4*scale
+            x = -round( LBP.getXYZCenter()[1]/2 )
+            z = round(LBP.getXYZCenter()[2]/2)
+            
+            if mat == 0:
+                g.send("defaultpen(fontsize(0.1pt));")
+                Tt = 'label("(' + str(z)+ ','+ str(x) + ')" , ('+str(R)+',0));' 
+                g.send(Tt)
+
 
 
 
@@ -342,8 +393,17 @@ class RenderCad:
 
             for BP in this.Helices.getElements() :
                 ### Basically, just draw them
+
+
                 P = BP.getPosScaffold()
+
+                Ps = BP.getPosStp()
+
+
                 C = [  P[0], P[1], P[2] ]
+
+                #LL = "draw(("+str(-P[1]) + "," +str(P[0])+ ")--(" + str(-Ps[1])+","+str(Ps[0])+"), marker=MarkFill[0]);"
+                #g.send(LL)
 
                 if PC == None:
                     PC = C
@@ -354,8 +414,9 @@ class RenderCad:
                     SC_Coord.clear()
 
                 PC = C
+                CP = [C, BP]
 
-                SC_Coord.append( C )
+                SC_Coord.append( CP )
             this.renderAsyStrand(g, SC_Coord,0)
             #End scaffolds
 
@@ -382,9 +443,11 @@ class RenderCad:
                             
                             for BP in lista :
                                 ### Basically, just draw them
+
                                 P = BP.getPosStp()
                                 C = [  P[0], P[1], P[2] ]
-                                coordN.append( C )
+                                CP = [ C, BP ]
+                                coordN.append( CP )
                             
                             BP = lista[-1]
                             BP2 = BP.getPrev()
@@ -419,11 +482,83 @@ class RenderCad:
                 print("Output file located in: " + filepath)
             except:
                 print("Error moving file. Check your home folder")
+    
+
+    def RenderPDF2(this, filename):
+
+        Exito = False
+        
+        try:
+            print ("Rendering in asymptote")
+            g = asy()
+            print("Executing...")
+            g.send("import settings")
+            g.send('outformat="pdf"')
+            g.send('interactiveView=false')
+            
+
+            g.size(300)
+
+            Prev = None
+
+            for BP in this.Helices.getElements() :
+                
+                
+                ## Render BP
+                if Prev != None:
+                    ## Set the points. 
+                    if Prev.getNext() == BP :
+                        ## Render scaffold
+                        Py1 = Prev.getX()
+                        Py2 = BP.getX()
+                        Px1 = Prev.getRod()*4
+                        Px2 = BP.getRod()*4
+                        comm = "draw( ("+str(Px1)+","+str(Py1)+") -- (" + str(Px2)+ "," + str(Py2) + "),  blue)"
+                        g.send(comm)
+
+                    # Render joint
+                    Py1 = BP.getX()
+                    Px1 = BP.getRod()*4
+                    Py2 = Py2
+                    Px2 = Px1+1
+                    comm = "draw( ("+str(Px1)+","+str(Py1)+") -- (" + str(Px2)+ "," + str(Py2) + "),  black)"
+                    g.send(comm)
+
+                    ## Render staple
+                    if BP.getPrevStp() != None :
+                        NT = BP.getPrevStp()
+                        Py1 = NT.getX()
+                        Px1 = NT.getRod()*4 + 1
+                        comm = "draw( ("+str(Px1)+","+str(Py1)+") -- (" + str(Px2)+ "," + str(Py2) + "), red)"
+                        g.send(comm)
+
+
+
+
+                Prev = BP
+
+
+            
+            g.finish()
+
+            
+            Exito = True
+
+        
+        except:
+            print ("Error running asymptote")
+
+        
+        if Exito :
+            ## Move file to user location
+            try:
+                filepath = bpy.path.abspath("//"+filename)
+                
+                shutil.move("out.pdf", filepath)
+                print("Output file located in: " + filepath)
+            except:
+                print("Error moving file. Check your home folder")
                     
-
-
-
-
 
 
     

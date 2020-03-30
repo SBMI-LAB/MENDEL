@@ -34,6 +34,14 @@ class Strand():
                 this.growFirst()
                 this.growLast()
 
+    def setLine(this):
+        print("Converting to line")
+        for BP in this.CurrentStrand:
+            BP.setStaple(None)
+
+        this.CurrentStrand.clear()
+        this.CurrentStrand.append(this.First)
+        this.growStep()
 
     def growFirst(this):
         First = this.First = this.CurrentStrand[0]

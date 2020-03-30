@@ -1,5 +1,19 @@
 Blender Cadnano Helper
 
+V18
+03/18/2020 06:31:36 PM -0400
+03/18/2020 06:51:30 PM -0400
+Small updates - functional
+03/23/2020 10:42:20 PM -0400
+Small update
+03/24/2020 02:57:58 PM -0400
+Render PDF functional
+
+
+V17
+03/18/2020 09:58:25 AM -0400
+V17: Parallel Helix start
+
 
 V16
 03/16/2020 03:33:04 PM -0400
@@ -10,7 +24,6 @@ crossings
 03/16/2020 05:16:19 PM -0400
 Reducing crossing algorithm work initially.
 Needs extra work for smarter decisions.
-
 03/16/2020 07:08:21 PM -0400
 New primitives added to build shapes based on coordinates.
 
