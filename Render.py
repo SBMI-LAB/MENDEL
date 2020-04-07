@@ -560,6 +560,148 @@ class RenderCad:
                 print("Error moving file. Check your home folder")
                     
 
+    def renderSC(this, g, scList):
+        
+        dy = 1
+        scale = 10
+        RDS = 6
+        
+        ## Prepare staples:
+        salida = "draw("
+        salida2 = "draw("
+        First = False
+        for BP in scList:
+            if First == True:
+                salida += "--"
+                salida2 += "--"
+            ### Adding list of elements, just coordinates
+            C = BP.getXYZCenter()
+            C2 = BP.getRod()
+            Y = C[0] + dy
+            X = C2*RDS - 1
+            X2 = X + 2
+            X = X*scale
+            X2 = X2*scale
+            Y = Y*scale
+            salida += "("+str(X) + ","+str(Y) + ")"
+            salida2 += "("+str(X2) + ","+str(Y) + ")"
+            First = True
+
+
+            ### Check prev staple:
+            stap = BP.getPrevStp()
+            
+            if stap != None:
+                if stap.getRod() != BP.getRod():
+                    ## It's different!
+                    R = str(stap.getRod()) + "/"  + str(stap.getX())
+                    ststring = "draw(("+str(X2) + ","+str(Y) + ")--("+str(X2+4) + ","+str(Y) + "),red)" 
+                    
+                    ststring2 = 'label("'+R+'" , ('+str(X2+4) + ","+str(Y) +'),align=E);' 
+                    g.send(ststring)
+                    g.send(ststring2)
+
+            stap = BP.getNextStp()
+            if stap != None:
+                if stap.getRod() != BP.getRod():
+                    R = str(stap.getRod()) + "/"  + str(stap.getX()) 
+                    ## It's different!
+                    ststring = "draw(("+str(X2) + ","+str(Y) + ")--("+str(X2+4) + ","+str(Y) + "),red)" 
+                    ststring2 = 'label("'+R+'" , ('+str(X2+4) + ","+str(Y) +'),align=E);' 
+                    g.send(ststring)
+                    g.send(ststring2)
+
+
+
+
+        salida += ",marker=MarkFill[0],blue)"
+        salida2 += ",marker=MarkFill[0],red)"
+        g.send(salida)
+        g.send(salida2)
+
+
+
+
+        BP = scList[-1]
+        R = BP.getRod()
+        C = BP.getXYZCenter()
+        y = round(-C[1]/2)
+        z = round(C[2]/2)
+
+        g.send("defaultpen(fontsize(0.1pt));")
+        
+        Tt = 'label("(' + str(z)+ ','+ str(y) + ')" , ('+str(R*RDS*scale)+',9));' 
+        g.send(Tt)
+        Tt = 'label("Helix '+str(R)+'" , ('+str(R*RDS*scale)+',0));' 
+        g.send(Tt)
+
+
+
+        
+
+
+
+
+
+    def RenderPDF3(this, filename):
+
+        Exito = False
+        
+        try:
+            print ("Rendering in asymptote")
+            g = asy()
+            print("Executing...")
+            g.send("import settings")
+            g.send('outformat="pdf"')
+            g.send('interactiveView=false')
+            
+
+            g.size(300)
+
+            scList = []
+            stList = []
+
+            for BP in this.Helices.getElements() :
+                Added = False
+                Prev = BP.getPrev() 
+                if Prev != None:
+                    if Prev.getRod() == BP.getRod() :
+                        scList.append(BP)
+                        Added = True
+
+                if Added == False:
+                    if len(scList) > 0 :
+                        this.renderSC(g, scList)
+                        scList.clear()
+                        
+                        scList.append(BP)
+
+
+            if len(scList) > 0: 
+                this.renderSC(g, scList)
+
+            
+            g.finish()
+
+            
+            Exito = True
+
+        
+        except:
+            print ("Error running asymptote")
+
+        
+        if Exito :
+            ## Move file to user location
+            try:
+                filepath = bpy.path.abspath("//"+filename)
+                
+                shutil.move("out.pdf", filepath)
+                print("Output file located in: " + filepath)
+            except:
+                print("Error moving file. Check your home folder")
+                    
+
 
     
     

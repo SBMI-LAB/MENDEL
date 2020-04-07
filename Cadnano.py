@@ -627,7 +627,7 @@ class Cadnano():
         this.analyzeStructure()
         render = RenderCad()
         render.setHelices(this.HelCad)
-        render.RenderPDF(filename)
+        render.RenderPDF3(filename)
         
 
 

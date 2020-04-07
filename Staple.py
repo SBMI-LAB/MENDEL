@@ -283,14 +283,14 @@ class Staple():
                 this.FirstStrand.append(this.First_1)
                 this.FirstStrand.append(this.Last_1)
                 
-                this.SecondStrand.append(this.First_2)
-                this.SecondStrand.append(this.Last_2)
+                #this.SecondStrand.append(this.First_2)
+                #this.SecondStrand.append(this.Last_2)
                 
                 bp_11.setStaple(this)
                 bp_21.setStaple(this)
                 
-                bp_12.setStaple(this)
-                bp_22.setStaple(this)
+                #bp_12.setStaple(this)
+                #bp_22.setStaple(this)
             
         except: 
             Exito = False
@@ -538,10 +538,10 @@ class Staple():
             
             for BP in Elements:
                 if BP != Previo and BP != None:
-                    if BP.getStaple() == this:
-                        Previo.setNextStp(BP)
-                        BP.setPrevStp(Previo)
-                        Previo = BP
+                    #if BP.getStaple() == this:
+                    Previo.setNextStp(BP)
+                    BP.setPrevStp(Previo)
+                    Previo = BP
             
             ## Set ending:
             Last.setNextStp(None)
