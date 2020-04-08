@@ -39,6 +39,9 @@ class Staple():
     
     FirstStrand = None
     SecondStrand = None
+
+    Strand1 = None
+    Strand2 = None
     
     Recursive1 = False
     Recursive2 = False
@@ -84,7 +87,10 @@ class Staple():
 
             try:
                 
-                
+                this.First_1 = this.FirstStrand[0]
+                this.Last_1 = this.FirstStrand[-1]
+                this.First_2 = this.SecondStrand[0]
+                this.Last_2 = this.SecondStrand[-1]
 
                 D1 = this.LengthFirst_1 = abs( this.First_1.getX() - this.Crossing  )
                 D2 = this.LengthFirst_2 = abs( this.First_2.getX() - this.Crossing  )
@@ -140,6 +146,12 @@ class Staple():
         this.Crossing = cross
         
         Exito = True
+
+        this.Strand1 = Strand()
+        this.Strand2 = Strand()
+
+        this.Strand1.setStrand(this.FirstStrand, this)
+        this.Strand2.setStrand(this.SecondStrand,this)  
         
         ### First and last is defined in terms of the orientation
         ### This gives a more control about the geometry
@@ -212,6 +224,12 @@ class Staple():
         this.Crossing = cross
 
         this.Parallel = Parallel
+
+        this.Strand1 = Strand()
+        this.Strand2 = Strand()
+
+        this.Strand1.setStrand(this.FirstStrand, this)
+        this.Strand2.setStrand(this.SecondStrand,this)        
         
         Exito = True
         
@@ -314,7 +332,33 @@ class Staple():
         this.Turn2 = turn2
     
     
+    def growEnd(this):
+        if this.Strand1 != None:
+            this.Strand1.growEnd()
+        if this.Strand2 != None:
+            this.Strand2.growEnd()
+
+
     def growStapleStep(this):
+        if this.Parallel == True:
+            #this.growStapleStep_2()
+            print("Nada")
+        else:
+            if this.Strand1 != None:
+                this.Strand1.growStep()
+                if len(this.FirstStrand) > 0:
+                    this.First_1 = this.FirstStrand[0]
+                    this.Last_1 = this.FirstStrand[-1]
+
+            if this.Strand2 != None:
+                this.Strand2.growStep()
+                if len(this.SecondStrand) > 0:
+                    this.First_2 = this.SecondStrand[0]
+                    this.Last_2 = this.SecondStrand[-1]
+
+            
+
+    def growStapleStepN(this):
         if this.Parallel == True:
             this.growStapleStep_2()
         else:
@@ -557,6 +601,21 @@ class Staple():
     
 
     def tryFuseStaple(this, Minstp):
+        this.MinStaple = Minstp
+        MinD =  this.getMinLength()
+
+        print("Fusion ? " + str(MinD))
+
+        if MinD < this.MinStaple:
+            this.Strand1.tryFuse()
+            this.Strand2.tryFuse() 
+
+            for k in range(10):
+                this.Strand1.growStep()
+                this.Strand2.growStep()
+
+
+    def tryFuseStapleN(this, Minstp):
         ### Here, it will attempt to dissolve a staple
         ### And probably merge it with another when it 
         ### is too short
@@ -580,6 +639,8 @@ class Staple():
             ### Start1 and finish in the Last2
 
             ## Let's do this:
+
+
 
             if this.First_1 != None and this.First_2 != None and this.Last_1 != None and this.Last_2 != None and len(this.FirstStrand) > 0 and len(this.SecondStrand) > 0:
                 

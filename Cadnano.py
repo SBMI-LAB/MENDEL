@@ -29,6 +29,9 @@ exec(compile(open(filepath).read(), filepath, 'exec'))
 filepath = bpy.path.abspath("//Staple.py")
 exec(compile(open(filepath).read(), filepath, 'exec'))
 
+filepath = bpy.path.abspath("//Strand.py")
+exec(compile(open(filepath).read(), filepath, 'exec'))
+
 filepath = bpy.path.abspath("//Render.py")
 exec(compile(open(filepath).read(), filepath, 'exec'))
 
@@ -568,6 +571,7 @@ class Cadnano():
                 if this.Parallel == False:
                     this.HelCad.reduceStaples()
                     print("Reducing staples")
+                    
                 else:
                     this.HelCad.stepGrowStaples()
 

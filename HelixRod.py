@@ -145,6 +145,7 @@ class HelixRod():
                     if Elem != None :
                         try:
                             Elem.tryFuseStaple(minSize)
+                            #print("What")
                             #Elem.tryMergeStaples()
                         except:
                             None

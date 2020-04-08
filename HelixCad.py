@@ -626,14 +626,22 @@ class HelixCad():
 
         minStaple = 1
 
+        
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
                 helixRod.ReduceStaples(minStaple)   
+        
 
-
+        
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
                 helixRod.ReduceStaplesLines() 
+        
+
+        for staple in this.StapleList:
+            if staple.isEnabled():
+                staple.growEnd()
+
 
         #for helixRod in this.Helices:
         #    if helixRod.isEmpty() == False:
