@@ -42,6 +42,11 @@ class Scaff():
     
     # ~ asigned = 0
 
+    def shift(this, x,y,z):
+        this.x += x
+        this.y += y
+        this.z += z
+
 
     def setStaple(this, staple):
         this.StapleObj = staple
@@ -152,14 +157,20 @@ class Scaff():
     def getNextStp(this):
         return this.NextStp
     
-    def setNextStp(this,N):
+    def setNextStp(this,N, recursive = True):
         this.NextStp = N
+
+        if N != None and recursive == True:
+            N.setPrevStp(this, False)
 
     def getPrevStp(this):
         return this.PrevStp
     
-    def setPrevStp(this,N):
+    def setPrevStp(this,N, recursive = True):
         this.PrevStp = N
+
+        if N != None and recursive == True:
+            N.setNextStp(this, False)
     
     def setR (this, n):
         this.rodnumber = n

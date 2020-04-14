@@ -73,10 +73,30 @@ class Cadnano():
     Elements = None
 
     Parallel = False
+
+    minX = 0
+    minY = 0
+    minZ = 0
     
 
     def setDraft(this):
         this.Draft = True
+
+    def Add(this, n):
+        this.AddMore(n)
+    
+    def UpZ(this):
+        this.AddTurn_Z_up()
+    
+    def UpY(this):
+        this.AddTurn_Y_up()
+
+    def DownZ(this):
+        this.AddTurn_Z_down()
+    
+    def DownY(this):
+        this.AddTurn_Y_down()
+    
     
     def configure(this):
         names = False
@@ -137,6 +157,13 @@ class Cadnano():
         if this.Elements == None:
             this.Elements = []
         this.Elements.append(this.prevBP)
+
+        Ppos = this.prevBP.getXYZ()
+        x,y,z = Ppos[0],Ppos[1], Ppos[2]
+
+        this.minX = min(x,this.minX)
+        this.minY = max(y,this.minY)
+        this.minZ = min(z,this.minZ)
 
         K.getAngleX()		
 
@@ -300,6 +327,15 @@ class Cadnano():
             this.currentAngle = this.currentAngle - 360
         
         
+        Ppos = this.prevBP.getXYZ()
+
+        x,y,z = Ppos[0],Ppos[1], Ppos[2]
+        
+        this.minX = min(x,this.minX)
+        this.minY = max(y,this.minY)
+        this.minZ = min(z,this.minZ)
+
+
         K.getAngleX()
         #this.xAngle = K.getAngleX()
         #print(xAngle)
@@ -552,6 +588,33 @@ class Cadnano():
     def analyzeStructure(this):
 
         if this.Analyzed == False :
+
+            ## set minimum
+
+            print("Compensating coordinates")
+            print(this.minX)
+            print(this.minY)
+            print(this.minZ)
+
+            if this.minX < 0 or this.minY > 0 or this.minZ < 0:
+                print("Compensating coordinates")
+                ### Compensate
+                sY = - this.minY*2
+                sZ = - this.minZ*2
+
+                ### X should be increased in terms of the angle: 21 bp
+                ### that is, if x = -1, should be 19
+                sX = this.minX % 21
+
+                for BP in this.Elements:
+                    BP.shift(sX, sY, sZ)
+
+
+
+
+
+            ## End minimum 
+
             this.HelCad = HelixCad()
             this.HelCad.SetParallel(this.Parallel)
             #this.HelCad.setLast(this.prevBP)

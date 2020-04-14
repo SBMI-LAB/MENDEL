@@ -333,10 +333,18 @@ class Staple():
     
     
     def growEnd(this):
-        if this.Strand1 != None:
-            this.Strand1.growEnd()
-        if this.Strand2 != None:
-            this.Strand2.growEnd()
+        #this.growStapleStep()
+        if True: 
+            if this.Strand1 != None:
+                this.Strand1.growEnd()
+                if len(this.FirstStrand) > 0:
+                    this.First_1 = this.FirstStrand[0]
+                    this.Last_1 = this.FirstStrand[-1]
+            if this.Strand2 != None:
+                this.Strand2.growEnd()
+                if len(this.SecondStrand) > 0:
+                    this.First_2 = this.SecondStrand[0]
+                    this.Last_2 = this.SecondStrand[-1]
 
 
     def growStapleStep(this):
@@ -582,10 +590,10 @@ class Staple():
             
             for BP in Elements:
                 if BP != Previo and BP != None:
-                    #if BP.getStaple() == this:
-                    Previo.setNextStp(BP)
-                    BP.setPrevStp(Previo)
-                    Previo = BP
+                    if BP.getStaple() == this:
+                        Previo.setNextStp(BP)
+                        BP.setPrevStp(Previo)
+                        Previo = BP
             
             ## Set ending:
             Last.setNextStp(None)

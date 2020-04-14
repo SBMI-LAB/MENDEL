@@ -49,8 +49,6 @@ class Strand():
 
         First = this.First = this.CurrentStrand[0]
         if First != None :
-            
-
             Next = this.First.getNext()
             if Next != None and Next != First:
                 dx = abs(Next.getX() - First.getX())
@@ -58,7 +56,7 @@ class Strand():
                 if stp == None:
                     #print("Growing first: " + str(dx))
                     #if Next.getRod() == First.getRod() and dx == 1:
-                    if Next.getRod() == First.getRod():
+                    if Next.getRod() == First.getRod() and dx <= 1:
                         this.First = Next
                         Next.setStaple(this.staple)
                         this.CurrentStrand.insert(0,Next)
@@ -83,7 +81,7 @@ class Strand():
                 stp = Next.getStaple()
                 if stp == None:
                     #if Next.getRod() == Last.getRod() and dx == 1:
-                    if Next.getRod() == Last.getRod():
+                    if Next.getRod() == Last.getRod() and dx <= 1:
                         this.Last = Next
                         Next.setStaple(this.staple)
                         this.CurrentStrand.append(Next)
@@ -96,17 +94,23 @@ class Strand():
 
     def growEnd(this):
 
-        if this.First != None:
-            if len(this.CurrentStrand) > 0:
-                Pase = True
-                while Pase :
-                    Pase = this.growFirst()
+        #this.growStep()
 
-        if this.Last != None:
-            if len(this.CurrentStrand) > 0:
-                Pase = True
-                while Pase :
-                    Pase = this.growLast()
+        if True: 
+            
+            if this.First != None:
+                if len(this.CurrentStrand) > 0:
+                    Pase = True
+                    while Pase :
+                        Pase = this.growFirst()
+
+            if this.Last != None:
+                if len(this.CurrentStrand) > 0:
+                    Pase = True
+                    while Pase :
+                        Pase = this.growLast()
+                        
+                        
    
   
 
