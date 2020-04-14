@@ -74,7 +74,9 @@ class HelixRod():
             
         
         this.maxStaple += 1  
-        
+
+    def appendStaple(this, stap):
+        this.YNS.append(stap)        
 
     def setStapleNew(this, pos, OtherHelix, Parallel):
         ### This new concept will create a staple object instead

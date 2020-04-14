@@ -631,16 +631,32 @@ class HelixCad():
             if helixRod.isEmpty() == False:
                 helixRod.ReduceStaples(minStaple)   
         
-
+        LastHelix = None
         
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
                 helixRod.ReduceStaplesLines() 
+                LastHelix = helixRod
         
 
         for staple in this.StapleList:
             if staple.isEnabled():
                 staple.growEnd()
+                
+
+
+        ### Last step: search for NT without staple
+        print("Filling blanks")
+        for BP in this.ElementList:
+            if BP != None:
+                if BP.getStaple() == None:
+                    print("Blank found")
+                    ### Create new staple with this one
+                    SObj = Staple()
+                    SObj.setSimpleStaple(BP)
+                    SObj.growEnd()
+                    this.StapleList.append(SObj)
+                    #LastHelix.appendStaple(SObj)
 
 
         #for helixRod in this.Helices:

@@ -61,6 +61,19 @@ class Staple():
 
     Parallel = False
     
+    def setSimpleStaple(this, BP):
+        ### Create staple with just one BP
+        this.FirstStrand = []
+        this.SecondStrand = []
+        this.FirstStrand.append(BP)
+
+        this.Strand1 = Strand()
+        this.Strand2 = Strand()
+        this.Strand1.setStrand(this.FirstStrand, this)
+        this.Strand2.setStrand(this.SecondStrand,this)
+        this.Enabled = True
+        
+
     def getCrossing(this):
         Retorno = -1
         if this.Lined == False:
@@ -333,7 +346,7 @@ class Staple():
     
     
     def growEnd(this):
-        #this.growStapleStep()
+        this.growStapleStep()
         if True: 
             if this.Strand1 != None:
                 this.Strand1.growEnd()

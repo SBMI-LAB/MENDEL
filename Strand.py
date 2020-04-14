@@ -31,6 +31,7 @@ class Strand():
     def growStep(this):
         if this.CurrentStrand != None and this.staple != None:
             if len(this.CurrentStrand) > 0:
+                #print("Grow strand")
                 this.growFirst()
                 this.growLast()
 
@@ -44,7 +45,7 @@ class Strand():
         this.growStep()
 
     def growFirst(this):
-        
+        #print("Growing first")
         Exito = False
 
         First = this.First = this.CurrentStrand[0]
@@ -69,7 +70,7 @@ class Strand():
 
 
     def growLast(this):
-
+        #print("Growing last")
         Exito = False
 
         Last = this.Last = this.CurrentStrand[-1]
@@ -95,6 +96,7 @@ class Strand():
     def growEnd(this):
 
         #this.growStep()
+        #print("Growing")
 
         if True: 
             
