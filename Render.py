@@ -42,7 +42,7 @@ class RenderCad:
             return False    
 
     
-    def RenderCylinders(this, vertices):
+    def RenderCylinders(this, vertices=5):
         ## Should generate cilinders in blender
         print("Rendering...")
 
@@ -241,6 +241,7 @@ class RenderCad:
 
         """
         ### Scaffold created
+        
 
         for staplec in this.Helices.getStapleList():
             

@@ -45,7 +45,7 @@ except:
     print("Module asymptote cannot be initialized")
 
 
-class Cadnano():
+class Mendel():
     
     mode = "Wire"
     
@@ -203,10 +203,18 @@ class Cadnano():
                 this.AddTurn_Y_up()
 
         this.AddMore(d)
-        
+
+    def RectUp(this, width, height):
+        this.AddRectUp(width, height)
+
+    def RectDown(this,width, height):
+        this.AddRect(width, height)        
 
     def AddRect(this, width , height) :
         ### Adds a rectangule forward with an specific size
+        if this.prevBP == None:
+            this.Add(1)
+
         P = this.prevBP.getXYZ()
         pX = P[0]
         pY = -P[1]
@@ -254,6 +262,9 @@ class Cadnano():
 
     def AddRectUp(this, width , height) :
         ### Adds a rectangule forward with an specific size
+        if this.prevBP == None:
+            this.Add(1)
+
         P = this.prevBP.getXYZ()
         pX = P[0]
         pY = P[1]

@@ -119,7 +119,8 @@ class Staple():
                 
                 minLength = min ( P )
             except:
-                print("No enabled")
+                #print("No enabled")
+                None
 
         return minLength
 
