@@ -158,13 +158,14 @@ class RenderCad:
 
                 if First == False:
                     prev.handle_right = left
+                    
             
             
 
             prev = p
             prevL = new_co
 
-            
+        
 
 
 
@@ -287,7 +288,7 @@ class RenderCad:
         if BP1 != None and BP2 != None :
             P = BP1.getPosStp()
             P2 = BP2.getPosStp()
-            C = [  (P[0]+P2[0])/2, (P[1]+P2[1])/2, (P[2]+P2[2]/2) ]
+            C = [  (P[0]+P2[0])/2, (P[1]+P2[1])/2, (P[2]+P2[2])/2 ]
             coordN.append( C )
 
 

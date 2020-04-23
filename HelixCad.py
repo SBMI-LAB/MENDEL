@@ -40,7 +40,7 @@ class HelixCad():
             pX = BP.getXYZCenter()
             k += 1
             if this.maxPosition < pX[0]:
-                this.maxPosition = round(pX[0])+1
+                this.maxPosition = round(pX[0])+10
 
         this.maxPosition = math.ceil(this.maxPosition/32)*32
         print("Total of " + str(k) + " elements")

@@ -81,6 +81,12 @@ class Mendel():
     minY = 0
     minZ = 0
     
+    def Split(this):
+        if this.prevBP != None:
+            prev1 = this.prevBP.getPrev()
+            this.prevBP.SetPrev(None)
+            if prev1 != None:
+                prev1.SetNext(None)
 
     def setDraft(this):
         this.Draft = True
@@ -142,7 +148,44 @@ class Mendel():
     def StartAt(this, n):
         this.initial = n
         #this.AddBP()
+
+    def AddAt(this,x,y,z):
+        ### Tries to add a new BP independent of others
         
+        this.initial = x
+        K = Scaff()    
+        y = -y    
+        K.setId(this.c_id)
+        this.c_id = this.c_id+1
+        K.setMode(this.mode)
+        this.currentAngle= this.initial*this.pAng
+        K.SetAngle(this.currentAngle)
+        K.SetXAng(0)
+        this.firstTime = True
+
+        rr = y+z
+        if rr%2 == 1:
+            K.TurnZ()
+
+
+        K.AddObj((x,2*y,2*z))
+        
+        this.prevBP = K
+
+        if this.Elements == None:
+            this.Elements = []
+        this.Elements.append(this.prevBP)
+
+        Ppos = this.prevBP.getXYZ()
+        x,y,z = Ppos[0],Ppos[1], Ppos[2]
+
+        this.minX = min(x,this.minX)
+        this.minY = max(y,this.minY)
+        this.minZ = min(z,this.minZ)
+
+        K.getAngleX()		        
+
+
     def AddHelix(this,x,y,z,angle):
         this.Parallel = True
         K = Scaff()    
@@ -224,6 +267,9 @@ class Mendel():
 
         Exito = False
 
+        maxX = dX
+        minX = pX
+
         height = width*height
 
         print("Creating system..." + str(height))
@@ -232,6 +278,9 @@ class Mendel():
             C = this.prevBP.getXYZ()
             CX = C[0]
             CY = -C[1]
+
+            minX = min(minX,CX)
+            maxX = max(maxX,CX)
             
             oz = this.prevBP.getOz()
 
@@ -253,7 +302,12 @@ class Mendel():
                     if CY == dY:
                         Exito = True
                     else:
-                        this.AddTurn_Y_down()         
+                        this.AddTurn_Y_down() 
+
+        if oz == 0 or oz == 360:
+            this.GotoX(maxX)
+        else:
+            this.GotoX(minX)
 
 
 
@@ -274,7 +328,8 @@ class Mendel():
 
         Exito = False
 
-        
+        maxX = dX
+        minX = pX
 
         print("Creating system..." + str(height))
 
@@ -282,6 +337,9 @@ class Mendel():
             C = this.prevBP.getXYZ()
             CX = C[0]
             CY = C[1]
+
+            minX = min(minX,CX)
+            maxX = max(maxX,CX)
             
             oz = this.prevBP.getOz()
 
@@ -295,6 +353,7 @@ class Mendel():
                         Exito = True
                     else:
                         this.AddTurn_Y_up()
+                        
 
             else:
                 if CX > pX : ### I am in the range
@@ -305,6 +364,11 @@ class Mendel():
                     else:
                         this.AddTurn_Y_up()         
 
+        
+        if oz == 0 or oz == 360:
+            this.GotoX(maxX)
+        else:
+            this.GotoX(minX)
 
 
             
@@ -384,10 +448,16 @@ class Mendel():
         this.AddTurn_Y(180)
     
     def AddTurn_Y_down(this):
-        this.AddTurn_Y(270)
+        if this.prevBP.getOz() == 180:
+            this.AddTurn_Y(270) 
+        else:
+            this.AddTurn_Y(270)
 
     def AddTurn_Y_up(this):
-        this.AddTurn_Y(90)   
+        if this.prevBP.getOz() == 180:
+            this.AddTurn_Y(90)   
+        else:
+            this.AddTurn_Y(90)   
         
     def testingAngle(this,A,B):
         #compare distance between angles
@@ -476,9 +546,11 @@ class Mendel():
         ### Add n BP and then continue
         ### until turn down in Y direction
         #targetAngle = 270
-        
-        
         #testAng = abs(this.prevBP.getAngleX()-targetAngle)
+
+        ### If direction is negative, which angle should it turn?
+
+
         testAng = abs(this.GetXAngle()-targetAngle)
         cuenta = 0
         lastAng = 0
@@ -499,7 +571,8 @@ class Mendel():
         
         if cuenta < 30:    
         ### now Add another BP and rotate it
-            this.AddBP()
+            if this.prevBP.getOz() == 0 or this.prevBP.getOz() == 360:
+                this.AddBP()
 
             this.prevBP.setTurn( (targetAngle) )
 
@@ -618,7 +691,9 @@ class Mendel():
 
                 ### X should be increased in terms of the angle: 21 bp
                 ### that is, if x = -1, should be 19
-                sX = this.minX % 21
+                sX = abs(this.minX - this.minX % 21  ) 
+
+                
 
                 for BP in this.Elements:
                     BP.shift(sX, sY, sZ)

@@ -3,6 +3,9 @@ from math import *
 
 class Scaff():
     name = "name"
+
+    baseRot = 720/21
+
     sid = 0
     r_id = 0
     p_id = 0
@@ -81,10 +84,10 @@ class Scaff():
             this.z = G[2]
 
             
-            if P == 270:
+            if P == 270 or P == 270 - this.baseRot:
                 this.y += -2
             
-            if P == 90:
+            if P == 90 or P == 90 - this.baseRot:
                 this.y += 2
 
             if P == 0: 
@@ -93,6 +96,7 @@ class Scaff():
             if P == 180:
                 this.z += 2
 
+            
             
             
 
@@ -332,26 +336,28 @@ class Scaff():
     
       
     def SetPrev(this, Prev):
-        
-        if this.GetObj() != Prev.GetObj()  or this.geom == False  :
-            #this.GetObj().parent = Prev.GetObj()
-            P = Prev.getXYZ()
-            this.oz = Prev.getOz()
+        if Prev == None:
+            this.Prev = None
+        else:
+            if this.GetObj() != Prev.GetObj()  or this.geom == False  :
+                #this.GetObj().parent = Prev.GetObj()
+                P = Prev.getXYZ()
+                this.oz = Prev.getOz()
 
 
-            if this.oz == 0 or this.oz == 360:
-                this.x += P[0] 
-            else:
-                this.x = P[0] - this.x
-                #print("Neg")
+                if this.oz == 0 or this.oz == 360:
+                    this.x += P[0] 
+                else:
+                    this.x = P[0] - this.x
+                    #print("Neg")
 
-            this.y += P[1]
-            this.z += P[2]
+                this.y += P[1]
+                this.z += P[2]
 
-            
+                
 
-            this.Prev = Prev
-            Prev.SetNext(this)
+                this.Prev = Prev
+                Prev.SetNext(this)
         
 
 
@@ -363,12 +369,15 @@ class Scaff():
         return this.x
 
     def SetNext(this, Next):
-        this.Next = Next
+        if Next == None:
+            this.Next = None
+        else:
+            this.Next = Next
 
-        Next.SetZAng(this.oz)
-        Next.SetXAng(this.ox)  
-    
-        this.updatePos()
+            Next.SetZAng(this.oz)
+            Next.SetXAng(this.ox)  
+        
+            this.updatePos()
     
     
     def SetXAng (this,ang):
