@@ -1,55 +1,72 @@
-import bpy
-from mathutils import Vector
+Blender = False
+try:
+    import bpy
+    Blender = True
+except:
+    None
+    
+
+if Blender:
+    from mathutils import Vector
+
+
 from time import sleep
 
-
-def print(data):
-
-    for window in bpy.context.window_manager.windows:
-        screen = window.screen
-        for area in screen.areas:
-            if area.type == 'CONSOLE':
-                override = {'window': window, 'screen': screen, 'area': area}
-                bpy.ops.console.scrollback_append(override, text=str(data), type="OUTPUT") 
+if Blender:
+    def print(data):
+        for window in bpy.context.window_manager.windows:
+            screen = window.screen
+            for area in screen.areas:
+                if area.type == 'CONSOLE':
+                    override = {'window': window, 'screen': screen, 'area': area}
+                    bpy.ops.console.scrollback_append(override, text=str(data), type="OUTPUT") 
                 
 
-
-filepath = bpy.path.abspath("//scaff.py")
-exec(compile(open(filepath).read(), filepath, 'exec'))
-
-#filepath = bpy.path.abspath("//ExportCad.py")
-#exec(compile(open(filepath).read(), filepath, 'exec'))
-
-filepath = bpy.path.abspath("//HelixCad.py")
-exec(compile(open(filepath).read(), filepath, 'exec'))
-
-filepath = bpy.path.abspath("//HelixRod.py")
-exec(compile(open(filepath).read(), filepath, 'exec'))
-
-filepath = bpy.path.abspath("//Staple.py")
-exec(compile(open(filepath).read(), filepath, 'exec'))
-
-filepath = bpy.path.abspath("//Strand.py")
-exec(compile(open(filepath).read(), filepath, 'exec'))
-
-filepath = bpy.path.abspath("//Render.py")
-exec(compile(open(filepath).read(), filepath, 'exec'))
-
-filepath = bpy.path.abspath("//SubRod.py")
-exec(compile(open(filepath).read(), filepath, 'exec'))
-
-try:
-    filepath = bpy.path.abspath("//asymptote.py")
+if Blender:
+    ## Imports as Blender
+    
+    filepath = bpy.path.abspath("//scaff.py")
     exec(compile(open(filepath).read(), filepath, 'exec'))
-except:
-    print("Module asymptote cannot be initialized")
+    
+    #filepath = bpy.path.abspath("//ExportCad.py")
+    #exec(compile(open(filepath).read(), filepath, 'exec'))
+    
+    filepath = bpy.path.abspath("//HelixCad.py")
+    exec(compile(open(filepath).read(), filepath, 'exec'))
+    
+    filepath = bpy.path.abspath("//HelixRod.py")
+    exec(compile(open(filepath).read(), filepath, 'exec'))
+    
+    filepath = bpy.path.abspath("//Staple.py")
+    exec(compile(open(filepath).read(), filepath, 'exec'))
+    
+    filepath = bpy.path.abspath("//Strand.py")
+    exec(compile(open(filepath).read(), filepath, 'exec'))
+    
+    filepath = bpy.path.abspath("//Render.py")
+    exec(compile(open(filepath).read(), filepath, 'exec'))
+    
+    filepath = bpy.path.abspath("//SubRod.py")
+    exec(compile(open(filepath).read(), filepath, 'exec'))
+
+    try:
+        filepath = bpy.path.abspath("//asymptote.py")
+        exec(compile(open(filepath).read(), filepath, 'exec'))
+    except:
+        print("Module asymptote cannot be initialized")
+        
+else:
+    ## Imports as Python
+    from scaff import *
+    from HelixCad import *
+
 
 
 class Mendel():
     
     mode = "Wire"
     
-    direction = Vector((1,0,0))
+    #direction = Vector((1,0,0))
     
     prevBP = None
     
@@ -676,9 +693,9 @@ class Mendel():
 
         if this.Analyzed == False :
 
-            ## set minimum
+            ## set minimum: Compensate negative coordinates
 
-            print("Compensating coordinates")
+            #print("Compensating coordinates")
             print(this.minX)
             print(this.minY)
             print(this.minZ)
@@ -693,14 +710,8 @@ class Mendel():
                 ### that is, if x = -1, should be 19
                 sX = abs(this.minX - this.minX % 21  ) 
 
-                
-
                 for BP in this.Elements:
                     BP.shift(sX, sY, sZ)
-
-
-
-
 
             ## End minimum 
 
@@ -717,7 +728,7 @@ class Mendel():
 
                 #this.HelCad.solveConflicts()
 
-                this.HelCad.stepGrowStaples()
+                #this.HelCad.stepGrowStaples()
 
 
                 if this.Parallel == False:
@@ -725,6 +736,7 @@ class Mendel():
                     print("Reducing staples")
                     
                 else:
+                    None
                     this.HelCad.stepGrowStaples()
 
                 #this.HelCad.reduceStaples()
@@ -740,9 +752,11 @@ class Mendel():
             this.Analyzed = True
 
 
-
-        
+    ## Compatibility with previous name
     def writeCadnano(this, filename):
+        this.writeCaDNAno(filename)
+        
+    def writeCaDNAno(this, filename):
 
         #this.HelCad = HelixCad()
 

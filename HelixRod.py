@@ -1,9 +1,18 @@
-import bpy
+Blender = False
+try:
+    import bpy
+    Blender = True
+except:
+    from Staple import *
+    from SubRod import *
+    
 from math import radians
 import math
 
 
 class HelixRod():
+    
+    EmptySet = True
     
     currentRod = 0
     ispair = True
@@ -35,6 +44,8 @@ class HelixRod():
     ZPSa = None
     ZNSa = None   
     
+    SubRods = None
+    
     maxStaple = 0 
     
     def getYPS(this):
@@ -55,6 +66,57 @@ class HelixRod():
     def getZNSa(this):
         return this.ZPSa  
     
+    def genSubRods(this):
+        if this.SubRods == None:
+            this.SubRods = []
+            
+            count = 0
+            NSubRod = SubRod()
+            
+            Prev = None
+            PrevStp = None
+            
+            
+            for BP in this.row:
+                if BP == []:
+                    # Empty
+                    if count > 0:
+                       NSubRod.SetEnd(Prev.getX(), Prev)
+                       this.SubRods.append(NSubRod)
+                       NSubRod = SubRod() # Create new one
+                       count = 0
+                else:
+                    if count == 0:
+                       NSubRod.SetInitial(BP.getX(), BP)
+                    stp = BP.getStaple()
+                       
+                    if stp != None:
+                        #if stp != PrevStp:
+                        NSubRod.AddStp(stp)
+                    
+                    
+                   
+                    count += 1
+                    Prev = BP
+                    PrevStp = stp
+            
+            
+            if count > 0:
+                NSubRod.SetEnd(Prev.getX(), Prev)
+                this.SubRods.append(NSubRod)
+            
+            print("Subrods: " + str(len(this.SubRods)))
+            
+    
+    def reduceVote(this):
+        if this.SubRods != None:
+            for NSubRod in this.SubRods:
+                NSubRod.ReduceVote()
+    
+    def reduceClean(this):
+        if this.SubRods != None:
+            for NSubRod in this.SubRods:
+                NSubRod.CleanStaples()
     
     def setStaple(this, pos, OtherHelix):
         # ~ print("Adding: " + str(pos));
@@ -666,12 +728,18 @@ class HelixRod():
         #print("Rod: " + str(n) + " Pair: " + str(this.ispair) )
     
     def isEmpty(this):
+        
         empty = True
+        
+        #if this.EmptySet == True:
         for BP in this.row:
             if type(BP) != type([]):
                 empty = False
                 BP.setR(this.currentRod)
-
+        #this.EmptySet = empty
+            
+        
+        #return this.EmptySet
         return empty
     
     def getRow(this):

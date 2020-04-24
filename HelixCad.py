@@ -1,4 +1,11 @@
-import bpy
+Blender = False
+try:
+    import bpy
+    Blender = True
+except:
+    from HelixRod import *
+
+
 from math import radians
 import math
 
@@ -528,11 +535,12 @@ class HelixCad():
                                 if BP.getNextStp() == None and BP.getPrevStp() == None and BP2.getNextStp() == None and BP2.getPrevStp()== None:
                                     ### Compare if the coordinates match
                                     
-                                    P1 = BP.getPosStp()
-                                    P2 = BP2.getPosStp()
+                                    #P1 = BP.getPosStp()
+                                    #P2 = BP2.getPosStp()
                                     
                                     tcomp = tcomp + 1
-                                    D = (P1-P2).length
+                                    #D = (P1-P2).length
+                                    D = BP.distStp(BP2)
                                     
                                     # ~ P1 = BP.getAngleX()
                                     # ~ P2 = BP.getAngleX()
@@ -614,7 +622,8 @@ class HelixCad():
         for n in range(7):
             for staple in this.StapleList:
                 ### Grow staples 
-                staple.growStapleStep()
+                if staple.isEnabled():
+                    staple.growStapleStep()
     
 
     def solveConflicts(this):
@@ -625,27 +634,46 @@ class HelixCad():
     def reduceStaples(this):
 
         minStaple = 1
-
         
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
-                helixRod.ReduceStaples(minStaple)   
+                helixRod.genSubRods()
+                
+        for helixRod in this.Helices:
+            if helixRod.isEmpty() == False:
+                helixRod.reduceVote()
+                
+        for helixRod in this.Helices:
+            if helixRod.isEmpty() == False:
+                helixRod.reduceClean()
         
+        this.stepGrowStaples()
+        
+        
+#        for helixRod in this.Helices:
+#            if helixRod.isEmpty() == False:
+#                helixRod.ReduceStaples(minStaple)   
         LastHelix = None
         
-        for helixRod in this.Helices:
-            if helixRod.isEmpty() == False:
-                helixRod.ReduceStaplesLines() 
-                LastHelix = helixRod
+#        for helixRod in this.Helices:
+#            if helixRod.isEmpty() == False:
+#                helixRod.ReduceStaplesLines() 
+#                LastHelix = helixRod
         
-
+        this.stepGrowStaples()
+        
+        
+        
+        
+        
         for staple in this.StapleList:
             if staple.isEnabled():
                 staple.growEnd()
                 
 
 
-        ### Last step: search for NT without staple
+        ## Last step: search for NT without staple
+        
         print("Filling blanks")
         for BP in this.ElementList:
             if BP != None:
@@ -658,7 +686,7 @@ class HelixCad():
                     this.StapleList.append(SObj)
                     #LastHelix.appendStaple(SObj)
 
-
+        
         #for helixRod in this.Helices:
         #    if helixRod.isEmpty() == False:
         #        helixRod.ReduceStaples(2)
@@ -870,7 +898,10 @@ class HelixCad():
         filename=name
         print("Writing file: " + filename)
         
-        filepath = bpy.path.abspath("//"+filename)
+        if Blender:
+            filepath = bpy.path.abspath("//"+filename)
+        else:
+            filepath = filename
         
         Archivo = open(filepath, "w")
         

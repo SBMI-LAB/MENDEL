@@ -1,4 +1,10 @@
-import bpy
+Blender = False
+try:
+    import bpy
+    Blender = True
+except:
+    from Vector import *
+
 from math import *
 
 class Scaff():
@@ -44,6 +50,23 @@ class Scaff():
     posinrod = 0
     
     # ~ asigned = 0
+    
+    def distStp(this, Other):
+        D = 0
+        P1 = this.getPosStp()
+        P2 = Other.getPosStp()
+        
+        ## Como es la distancia en 3D
+        dx = abs(P1[0]-P2[0])
+        dy = abs(P1[1]-P2[1])
+        dz = abs(P1[2]-P2[2])
+        
+        dxy = sqrt( dx*dx + dy*dy )
+        
+        D = sqrt(dxy*dxy + dz*dz)
+        
+        #D = (P1-P2).length
+        return D
 
     def shift(this, x,y,z):
         this.x += x
@@ -96,17 +119,10 @@ class Scaff():
             if P == 180:
                 this.z += 2
 
-            
-            
-            
-
-
             if this.oz == 0 or this.oz == 360:
                 this.oz = 180
 
-
-
-                ### Compatibility
+                ### Compatibility with caDNAno orientation
                 this.ox = 180 - this.ox
 
                 #this.ox = -this.ox + 180
@@ -114,6 +130,7 @@ class Scaff():
             else:
                 this.oz = 0
                 
+                ### Compatibility with caDNAno orientation
                 this.ox = 180 - this.ox 
             
             this.updatePos()
@@ -185,7 +202,8 @@ class Scaff():
         this.posinrod = pos
     
     def getPosStp(this):
-        P = Vector( (this.lx, this.ly, this.lz) )
+        #P = Vector( (this.lx, this.ly, this.lz) )
+        P = [this.lx, this.ly, this.lz]
         return P
         #return this.Ob_link.matrix_world.to_translation()
     def getPosScaffold(this):

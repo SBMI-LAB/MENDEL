@@ -1,4 +1,10 @@
-import bpy
+Blender = False
+try:
+    import bpy
+    Blender = True
+except:
+    from Strand import *
+    
 from math import radians
 import math
 
@@ -60,6 +66,14 @@ class Staple():
     Lined = False
 
     Parallel = False
+    
+    Vote = 0
+    
+    def setVote(this, val):
+        this.Vote += val
+    
+    def getVote(this):
+        return this.Vote
     
     def setSimpleStaple(this, BP):
         ### Create staple with just one BP
@@ -140,6 +154,14 @@ class Staple():
     def getSecondStrand(this):
         return this.SecondStrand
 
+    def removeStaple(this):
+        this.Enabled = False
+        if this.FirstStrand != None:
+            for BP in this.FirstStrand:
+                BP.setStaple(None)
+        if this.SecondStrand != None:
+            for BP in this.SecondStrand:
+                BP.setStaple(None)            
     
     
     

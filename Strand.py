@@ -1,4 +1,10 @@
-import bpy
+Blender = False
+try:
+    import bpy
+    Blender = True
+except:
+    None
+    
 from math import radians
 import math
 
