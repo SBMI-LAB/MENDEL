@@ -44,12 +44,40 @@ class Scaff():
     
     mode = "Final"
     
+    compatible = True
+    
     geom = False
     
     rodnumber = 0
     posinrod = 0
     
+    NextRod = None
+    PrevRod = None
+    
+    
     # ~ asigned = 0
+    
+    def setNextRod(this, BP):
+        if this.getRod() == BP.getRod():
+            this.NextRod = BP
+            BP.setPrevRod(this)
+    
+    def setPrevRod(this, BP):
+        if this.getRod() == BP.getRod():
+            this.PrevRod = BP
+    
+    def getNextRod(this):
+        if this.oz == 0 or this.oz == 360:
+            return this.NextRod
+        else:
+            return this.PrevRod
+
+    def getPrevRod(this):
+        if this.oz == 0 or this.oz == 360:
+            return this.PrevRod
+        else:
+            return this.NextRod
+    
     
     def distStp(this, Other):
         D = 0
@@ -123,7 +151,8 @@ class Scaff():
                 this.oz = 180
 
                 ### Compatibility with caDNAno orientation
-                this.ox = 180 - this.ox
+                if this.compatible == True:
+                    this.ox = 180 - this.ox
 
                 #this.ox = -this.ox + 180
                 
@@ -131,7 +160,8 @@ class Scaff():
                 this.oz = 0
                 
                 ### Compatibility with caDNAno orientation
-                this.ox = 180 - this.ox 
+                if this.compatible == True:
+                    this.ox = 180 - this.ox 
             
             this.updatePos()
 
@@ -327,7 +357,12 @@ class Scaff():
         this.sid = cid
     
     def setMode(this, nmode):
-        this.mode = nmode
+        
+        if nmode == "Normal":
+            this.compatible = False
+        else:
+            this.mode = nmode
+        
     
     
     def createSphere(this,x,y,z,r):

@@ -73,8 +73,10 @@ class HelixRod():
             count = 0
             NSubRod = SubRod()
             
+            PrevBP = None            
             Prev = None
             PrevStp = None
+            
             
             
             for BP in this.row:
@@ -96,14 +98,20 @@ class HelixRod():
                     
                     
                    
+                    if PrevBP != [] and PrevBP != None:
+                        PrevBP.setNextRod(BP)
+                    
                     count += 1
                     Prev = BP
                     PrevStp = stp
-            
+                    
+                PrevBP = BP
             
             if count > 0:
                 NSubRod.SetEnd(Prev.getX(), Prev)
                 this.SubRods.append(NSubRod)
+                
+            
             
             print("Subrods: " + str(len(this.SubRods)))
             

@@ -56,7 +56,8 @@ class Strand():
 
         First = this.First = this.CurrentStrand[0]
         if First != None :
-            Next = this.First.getNext()
+            #Next = this.First.getNext()
+            Next = this.First.getNextRod()
             if Next != None and Next != First:
                 dx = abs(Next.getX() - First.getX())
                 stp = Next.getStaple()
@@ -82,8 +83,10 @@ class Strand():
         Last = this.Last = this.CurrentStrand[-1]
 
         if Last != None :
-            Next = this.Last.getPrev()
+            #Next = this.Last.getPrev()
+            Next = this.Last.getPrevRod()
             if Next != None and Next != Last:
+
                 dx = abs(Next.getX() - Last.getX())
                 stp = Next.getStaple()
                 if stp == None:
@@ -110,8 +113,11 @@ class Strand():
                 if len(this.CurrentStrand) > 0:
                     Pase = True
                     while Pase :
+                        #print(this.First.getX())
                         Pase = this.growFirst()
-
+            
+            this.growStep()
+            
             if this.Last != None:
                 if len(this.CurrentStrand) > 0:
                     Pase = True

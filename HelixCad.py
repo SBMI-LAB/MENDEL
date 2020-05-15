@@ -674,6 +674,7 @@ class HelixCad():
 
         ## Last step: search for NT without staple
         
+        
         print("Filling blanks")
         for BP in this.ElementList:
             if BP != None:
@@ -681,11 +682,12 @@ class HelixCad():
                     print("Blank found")
                     ### Create new staple with this one
                     SObj = Staple()
+                    #print(BP.getX())
                     SObj.setSimpleStaple(BP)
                     SObj.growEnd()
                     this.StapleList.append(SObj)
                     #LastHelix.appendStaple(SObj)
-
+        
         
         #for helixRod in this.Helices:
         #    if helixRod.isEmpty() == False:

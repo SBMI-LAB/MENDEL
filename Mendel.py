@@ -98,6 +98,35 @@ class Mendel():
     minY = 0
     minZ = 0
     
+    growAxes = "Y"
+    growSign = True
+    
+    def Growth(this, sense = "Y+"):
+        ### Define the orientation of growth for DNA
+        ## Y+: Grow along Y axes, positive X
+        ## Y-: Grow along Y axes, negative X
+        ## Z+: Grow along Z axes, positive X
+        ## Z-: Grown along Z axes, negative X
+        if sense == "Y+":
+            this.growAxes = "Y"
+            this.growSign = True
+            
+        if sense == "Y-":
+            this.growAxes = "Y"
+            this.growSign = False
+            
+        if sense == "Z+":
+            this.growAxes = "Z"
+            this.growSign = True
+        
+        if sense == "Z-":
+            this.growAxes = "Z"
+            this.growSign = False
+            
+    
+    def GetNumber(this):
+        return len(this.Elements)
+    
     def Split(this):
         if this.prevBP != None:
             prev1 = this.prevBP.getPrev()
@@ -753,6 +782,10 @@ class Mendel():
 
 
     ## Compatibility with previous name
+    def writecaDNAno(this, filename):
+        this.writeCaDNAno(filename)
+        
+    
     def writeCadnano(this, filename):
         this.writeCaDNAno(filename)
         
@@ -774,10 +807,20 @@ class Mendel():
 
         this.HelCad.writeFile(filename)
 
-    def Clean(this):
+    def CleanAll(this):
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.delete(use_global=False, confirm=False)
 
+    def Clean(this):
+        bpy.ops.object.select_all(action='SELECT')
+        
+        ## Omit objects that are not object_name*
+        for cosa in bpy.data.objects:
+            if ("object_name" in cosa.name) == False:
+                cosa.select_set(False)
+        
+        
+        bpy.ops.object.delete(use_global=False, confirm=False)
     
     def RenderCylinders(this, res = 5):
         

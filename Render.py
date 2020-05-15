@@ -30,6 +30,7 @@ class RenderCad:
             #print("Creating cylinder of L : " + str(L) )
 
             bpy.ops.mesh.primitive_cylinder_add(vertices=this.vertices, radius = 1, depth = L, location=(xpos,-this.y,this.z), rotation=(0,radians(90),0))
+            bpy.context.active_object.name = 'object_name'
 
 
     def compareX (this, x1, x2):
@@ -120,6 +121,7 @@ class RenderCad:
         #obj2.data.bevel_object = obj1
         obj2.data.bevel_depth = depth
         obj2.data.bevel_resolution = res
+        
         bpy.data.objects[-1].data.materials.append(bpy.data.materials[mat])
         obj2.data.twist_mode = 'Z_UP'
 

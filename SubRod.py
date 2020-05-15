@@ -93,7 +93,7 @@ class SubRod():
         print("D2: " + str(D2))
         
         #minimum
-        Umbral = 3
+        Umbral = 2
         #staple.removeStaple()
         #Extreme corner
         if D1 < Umbral or D2 < Umbral:
@@ -104,7 +104,7 @@ class SubRod():
             if D1 > D2 and (T == this.EndingRod or this.EndingRod == None):
                 staple.setVote(3)
             
-            staple.setVote(-3)
+            staple.setVote(-10)
             #None
         Umbral = 7
         #staple.removeStaple()
@@ -129,7 +129,7 @@ class SubRod():
         if this.PrevStaple != None and this.PrevStaple != staple:
             C2 = this.PrevStaple.getCrossing()
             
-            Umbral = 20
+            Umbral = 10
             D = abs(C-C2)
             if D < Umbral:
                 ### Erase one of them, first vote
@@ -145,8 +145,6 @@ class SubRod():
                     this.PrevStaple.removeStaple()
                 
             
-        
-        
         this.PrevStaple = staple
         
         None

@@ -21,9 +21,8 @@ X = 40
 print("Start")
 Cad.StartAt(0)
 
-Cad.RectDown(10,4)
-Cad.RectDown(30,4)
-Cad.RectUp(10,8)
+Cad.RectDown(5,2)
+Cad.RectUp(5,2)
 
 
 Cad.writeCaDNAno("Tests.json")

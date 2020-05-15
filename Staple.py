@@ -80,6 +80,7 @@ class Staple():
         this.FirstStrand = []
         this.SecondStrand = []
         this.FirstStrand.append(BP)
+        BP.setStaple(this)
 
         this.Strand1 = Strand()
         this.Strand2 = Strand()
