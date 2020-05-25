@@ -27,6 +27,7 @@ Cad.RectUp(5,2)
 
 Cad.writeCaDNAno("Tests.json")
 
+Cad.Stats()
 
 elapsed = time.time() - t
 print(elapsed)

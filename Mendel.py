@@ -9,7 +9,7 @@ except:
 if Blender:
     from mathutils import Vector
 
-
+import time
 from time import sleep
 
 if Blender:
@@ -64,6 +64,8 @@ else:
 
 class Mendel():
     
+    t = time.time()
+    
     mode = "Wire"
     
     #direction = Vector((1,0,0))
@@ -100,6 +102,19 @@ class Mendel():
     
     growAxes = "Y"
     growSign = True
+    
+    def Stats(this):
+        elapsed = time.time() - this.t
+        print("======================")
+        print("MENDEL")
+        print("Created by Jorge Guerrero")
+        print("North Carolina A&T State University")
+        print("V. 20.05.19") ## Year, Month, Day
+        
+        print("")
+        print("Total base pairs: " + str(len(this.Elements)))
+        print(f'Generation time: {elapsed:.3f} seconds')
+        
     
     def Growth(this, sense = "Y+"):
         ### Define the orientation of growth for DNA
@@ -259,6 +274,28 @@ class Mendel():
 
         K.getAngleX()		
 
+    def GetX(this):
+        pX = 0
+        if this.prevBP != None:
+            pX = this.prevBP.getX()
+        
+        return pX
+    
+    def GetY(this):
+        pY = 0
+        if this.prevBP != None:
+            pY = this.prevBP.getXYZ()[1]
+        
+        return pY  
+
+    def GetZ(this):
+        pZ = 0
+        if this.prevBP != None:
+            pZ = this.prevBP.getXYZ()[2]
+        
+        return pZ
+    
+            
     def GotoX(this, X):
         ### Adds enough elements to move to the respective X coordinate
         P = this.prevBP.getXYZ()
@@ -299,7 +336,7 @@ class Mendel():
     def RectDown(this,width, height):
         this.AddRect(width, height)        
 
-    def AddRect(this, width , height) :
+    def AddRect_old(this, width , height) :
         ### Adds a rectangule forward with an specific size
         if this.prevBP == None:
             this.Add(1)
@@ -356,11 +393,87 @@ class Mendel():
             this.GotoX(minX)
 
 
+    def AddRect(this, width , height) :
+        ### Adds a rectangule forward with an specific size
+        if this.prevBP == None:
+            this.Add(1)
+
+        P = this.prevBP.getXYZ()
+        pX = P[0]
+        
+        Ny = 1
+        if this.growAxes == "Z":
+            Ny = 2
+        
+        pY = -P[Ny]
+
+
+        if this.growSign:
+            dX = pX + width
+        else:
+            dX = pX
+            pX = pX - width
+        
+        
+        dY = pY + height*2
+
+        Exito = False
+
+        maxX = dX
+        minX = pX
+
+        height = width*height
+
+        print("Creating system..." + str(height))
+
+        while Exito == False:
+            C = this.prevBP.getXYZ()
+            CX = C[0]
+            CY = -C[Ny]
+
+            minX = min(minX,CX)
+            maxX = max(maxX,CX)
+            
+            oz = this.prevBP.getOz()
+
+            print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
+
+            if oz == 0 or oz == 360:
+                if CX < dX : ### I am in the range
+                    this.AddBP()
+                else:
+                    if CY == dY:
+                        Exito = True
+                    else:
+                        if this.growAxes == "Y":
+                            this.AddTurn_Y_down()
+                        else:
+                            this.AddTurn_Z_down()
+
+            else:
+                if CX > pX : ### I am in the range
+                    this.AddBP()
+                else:
+                    if CY == dY:
+                        Exito = True
+                    else:
+                        if this.growAxes == "Y":
+                            this.AddTurn_Y_down()
+                        else:
+                            this.AddTurn_Z_down()
+
+        if oz == 0 or oz == 360:
+            this.GotoX(maxX)
+        else:
+            this.GotoX(minX)
 
 
 
 
-    def AddRectUp(this, width , height) :
+
+
+
+    def AddRectUp_old(this, width , height) :
         ### Adds a rectangule forward with an specific size
         if this.prevBP == None:
             this.Add(1)
@@ -409,6 +522,84 @@ class Mendel():
                         Exito = True
                     else:
                         this.AddTurn_Y_up()         
+
+        
+        if oz == 0 or oz == 360:
+            this.GotoX(maxX)
+        else:
+            this.GotoX(minX)
+
+
+    def AddRectUp(this, width , height) :
+        ### Adds a rectangule forward with an specific size
+        if this.prevBP == None:
+            this.Add(1)
+
+        P = this.prevBP.getXYZ()
+        pX = P[0]
+        
+        Ny = 1;
+        
+        if this.growAxes == "Z":
+            Ny = 2
+        
+        pY = P[Ny]
+        
+
+        if this.growSign:
+            dX = pX + width
+        else:
+            dX = pX
+            pX = pX - width
+        #dX = pX + width
+        
+        
+        
+        dY = pY + height*2
+
+        Exito = False
+
+        maxX = dX
+        minX = pX
+
+        print("Creating system..." + str(height))
+
+        while Exito == False:
+            C = this.prevBP.getXYZ()
+            CX = C[0]
+            CY = C[Ny]
+
+            minX = min(minX,CX)
+            maxX = max(maxX,CX)
+            
+            oz = this.prevBP.getOz()
+
+            print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
+
+            if oz == 0 or oz == 360:
+                if CX < dX : ### I am in the range
+                    this.AddBP()
+                else:
+                    if CY == dY:
+                        Exito = True
+                    else:
+                        if this.growAxes == "Y":
+                            this.AddTurn_Y_up()
+                        else:
+                            this.AddTurn_Z_up()
+                        
+
+            else:
+                if CX > pX : ### I am in the range
+                    this.AddBP()
+                else:
+                    if CY == dY:
+                        Exito = True
+                    else:
+                        if this.growAxes == "Y":
+                            this.AddTurn_Y_up()         
+                        else:
+                            this.AddTurn_Z_up()
 
         
         if oz == 0 or oz == 360:

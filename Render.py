@@ -30,7 +30,7 @@ class RenderCad:
             #print("Creating cylinder of L : " + str(L) )
 
             bpy.ops.mesh.primitive_cylinder_add(vertices=this.vertices, radius = 1, depth = L, location=(xpos,-this.y,this.z), rotation=(0,radians(90),0))
-            bpy.context.active_object.name = 'object_name'
+            bpy.context.active_object.name = 'z_mendel_object_name'
 
 
     def compareX (this, x1, x2):
@@ -179,7 +179,7 @@ class RenderCad:
 
 
         # make a new object with the curve
-        obj = bpy.data.objects.new('object_name', crv)
+        obj = bpy.data.objects.new('z_mendel_object_name', crv)
 
         spline.order_u = resolution
 
