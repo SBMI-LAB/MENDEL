@@ -12,6 +12,8 @@ class RenderCad:
     vertices = 3
 
     BaseRibbon = None
+    
+    lastname = ""    
 
 
     def setHelices(this, helices):
@@ -31,7 +33,7 @@ class RenderCad:
 
             bpy.ops.mesh.primitive_cylinder_add(vertices=this.vertices, radius = 1, depth = L, location=(xpos,-this.y,this.z), rotation=(0,radians(90),0))
             bpy.context.active_object.name = 'z_mendel_object_name'
-
+            this.lastname = bpy.context.active_object.name
 
     def compareX (this, x1, x2):
         ### Compare if they are neighbors
@@ -42,6 +44,7 @@ class RenderCad:
         else:
             return False    
 
+    
     
     def RenderCylinders(this, vertices=5):
         ## Should generate cilinders in blender
@@ -180,7 +183,7 @@ class RenderCad:
 
         # make a new object with the curve
         obj = bpy.data.objects.new('z_mendel_object_name', crv)
-
+        this.lastname = obj.name
         spline.order_u = resolution
 
         return obj
@@ -214,20 +217,21 @@ class RenderCad:
 
         for BP in this.Helices.getElements() :
             ### Basically, just draw them
-            P = BP.getPosScaffold()
-            C = [  P[0], P[1], P[2] ]
-
-            if PC == None:
+            if BP.isAssigned():
+                P = BP.getPosScaffold()
+                C = [  P[0], P[1], P[2] ]
+    
+                if PC == None:
+                    PC = C
+    
+                if abs(PC[0] - C[0]) > 1:
+                    ### Create a scaffold
+                    this.RenderStrand(SC_Coord,0)
+                    SC_Coord.clear()
+    
                 PC = C
-
-            if abs(PC[0] - C[0]) > 1:
-                ### Create a scaffold
-                this.RenderStrand(SC_Coord,0)
-                SC_Coord.clear()
-
-            PC = C
-
-            SC_Coord.append( C )
+    
+                SC_Coord.append( C )
 
 
 
@@ -275,8 +279,8 @@ class RenderCad:
                         bpy.context.scene.collection.objects.link(objN)
                         objN.data.bevel_depth = depth
                         objN.data.bevel_resolution = res
-                        bpy.data.objects[-1].data.materials.append(bpy.data.materials[stpInd])
-
+                        #bpy.data.objects[-1].data.materials.append(bpy.data.materials[stpInd])
+                        bpy.data.objects[this.lastname].data.materials.append(bpy.data.materials[stpInd])
                         stpInd += 1
 
                         if stpInd == 4:

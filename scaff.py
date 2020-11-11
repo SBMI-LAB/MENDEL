@@ -54,6 +54,7 @@ class Scaff():
     NextRod = None
     PrevRod = None
     
+    assigned = False
     
     # ~ asigned = 0
     
@@ -225,11 +226,16 @@ class Scaff():
     
     def setR (this, n):
         this.rodnumber = n
+        this.assigned = True
         #print(this.rodnumber)
     
     def setRod(this,n, pos):
         this.rodnumber = n
         this.posinrod = pos
+        this.assigned = True
+    
+    def isAssigned(this):
+        return this.assigned
     
     def getPosStp(this):
         #P = Vector( (this.lx, this.ly, this.lz) )
@@ -387,7 +393,9 @@ class Scaff():
     def GetNext (this):
         return this.Next
     
-      
+    def SetPrev2(this, Prev):
+        this.Prev = Prev
+    
     def SetPrev(this, Prev):
         if Prev == None:
             this.Prev = None
@@ -409,8 +417,8 @@ class Scaff():
 
                 
 
-                this.Prev = Prev
-                Prev.SetNext(this)
+            this.Prev = Prev
+            Prev.SetNext(this)
         
 
 

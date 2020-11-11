@@ -115,6 +115,23 @@ class Mendel():
         print("Total base pairs: " + str(len(this.Elements)))
         print(f'Generation time: {elapsed:.3f} seconds')
         
+        print("Previous: ")
+        print(this.prevSize)
+        print("After: ")
+        print(this.finalSize)
+        
+        ## Count scaffolds
+        cuenta = 1
+        Previo = None
+        for BP in this.Elements:
+            if Previo != None:
+                if Previo.getNext() != BP or BP.getPrev() != Previo:
+                    cuenta = cuenta + 1
+                Previo = BP
+        print(f"Total: {cuenta} scaffolds")
+        
+        
+        
     
     def Growth(this, sense = "Y+"):
         ### Define the orientation of growth for DNA
@@ -908,7 +925,7 @@ class Mendel():
         #for h in range(10):
         #    print(TT.getOrientation())
         #    TT = TT.GetNext()
-
+    
     def analyzeStructure(this):
 
         if this.Analyzed == False :
@@ -938,10 +955,21 @@ class Mendel():
             this.HelCad = HelixCad()
             this.HelCad.SetParallel(this.Parallel)
             #this.HelCad.setLast(this.prevBP)
+            
+            this.prevSize = len(this.Elements)
+            
             this.HelCad.setElements(this.Elements)
             
             this.HelCad.buildRods()
-
+            
+            this.HelCad.RemoveConflict()
+            
+            this.Elements = this.HelCad.getElements()
+            
+            this.finalSize = len(this.Elements)
+            
+           
+            
 
             if this.Draft == False:
                 this.HelCad.AnalyzeStaples()

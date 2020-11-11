@@ -782,6 +782,8 @@ class HelixCad():
     
     def buildRods(this):
         print("Building rods")
+        this.prevConflict = False
+        
         for BP in this.ElementList:
             this.addBP(BP)
             
@@ -833,7 +835,48 @@ class HelixCad():
 
         # ~ this.AnalyzeStaples()
         # ~ this.OldAnalyzeStaples()
+        #this.RemoveConflict();
+
+    def RemoveConflict(this):
+        ### This will go through the Element list, and the
+        ## check if the BP is in some Rod, otherwise, remove it
+        prev = None
+        failed = None
+        corrected = True
+        Last = None
         
+        El2 = []
+        
+        for BP in this.ElementList:
+            if BP.isAssigned() == True:
+                ## BP is working
+                El2.append(BP)
+                if corrected == False:
+                    ## Found one element after the error
+                    #BP.SetPrev(failed.getPrev())
+                    #failed.getPrev().SetNext(BP)
+                    #BP.SetPrev2(Last)
+                    BP.Prev = Last
+                    Last.Next = BP
+                    #Last.SetNext(BP)
+                    corrected = True
+                    
+                    #print(BP.getPosScaffold())
+                    #print(Last.getPosScaffold())
+                
+                    
+                
+                Last = BP
+            else:
+                ## BP is not working
+                if corrected:
+                    failed = BP
+                    corrected = False
+                #print(BP.getPosScaffold())   
+                #this.ElementList.remove(BP)
+        this.ElementList = El2    
+            
+            
     
     def addBP(this, BP):
         #print("Adding BP")
@@ -889,7 +932,25 @@ class HelixCad():
             # here add the BP
             
             #print("x: " + str(x)  + ", maxP: " + str(this.maxPosition) + ", row: " + str(len(row)))
-            row[x]=BP
+            
+            if type(row[x]) != type(BP):
+                row[x]=BP
+                
+#                if this.prevConflict:
+#                    this.LastGoodBP.SetNext(BP)
+#                    BP.SetPrev(this.LastGoodBP)
+#                this.LastGoodBP = BP
+#                this.prevConflict = False
+#            else:
+#                this.prevConflict = True
+                
+                #print("Conflict!")
+            
+                
+            
+            
+            
+
             
             #this.Helices[y].setRow(row)
             
