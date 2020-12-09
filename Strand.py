@@ -21,6 +21,9 @@ class Strand():
 
     TouchingFirst = None
     TouchingLast = None
+    
+    TouchingFirstStrand = None
+    TouchingLastStrand = None
 
     Enabled = False
 
@@ -67,11 +70,14 @@ class Strand():
                     if Next.getRod() == First.getRod() and dx <= 1:
                         this.First = Next
                         Next.setStaple(this.staple)
+                        Next.StapleStrand = this
+                        #Next.setStaple(this)
                         this.CurrentStrand.insert(0,Next)
                         Exito = True
                 else:
                     if stp != this.staple:
                         this.TouchingFirst = stp
+                        this.TouchingFirstStrand = Next.StapleStrand
 
         return Exito
 
@@ -94,11 +100,14 @@ class Strand():
                     if Next.getRod() == Last.getRod() and dx <= 1:
                         this.Last = Next
                         Next.setStaple(this.staple)
+                        Next.StapleStrand = this
+                        #Next.setStaple(this)
                         this.CurrentStrand.append(Next)
                         Exito = True
                 else:
                     if stp != this.staple:
                         this.TouchingLast = stp
+                        this.TouchingLastStrand = Next.StapleStrand
         return Exito
 
 
@@ -143,6 +152,29 @@ class Strand():
         this.CurrentStrand.append(First)
 
         First.setStaple(this.staple)
+        
+    def checkFuse(this):
+        ### This should attempt a fuse with one touching
+        ## Staple if both have a few count of bp
+        ...
+        
+        """
+        if len(this.CurrentStrand) < 18 and len(this.CurrentStrand) > 0:
+            ### Check if the limits can be joined
+            if this.TouchingFirstStrand != None:
+                ### Check here                
+                if len(this.TouchingFirstStrand.CurrentStrand) < 18:
+                    ### Fuse!!!
+                    for item in this.TouchingFirstStrand.CurrentStrand:
+                        this.CurrentStrand.append(item)
+                    
+                    this.TouchingFirstStrand.CurrentStrand.clear()
+                    
+                    
+        """            
+                    
+            
+            
         
         #this.growStep()
 

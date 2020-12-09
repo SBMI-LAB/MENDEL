@@ -69,6 +69,8 @@ class Staple():
     
     Vote = 0
     
+    Fused = False
+    
     def setVote(this, val):
         this.Vote += val
     

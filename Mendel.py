@@ -224,7 +224,8 @@ class Mendel():
 
 
     def StartAt(this, n):
-        this.initial = n
+        #this.initial = n
+        this.AddAt(n,0,0)
         #this.AddBP()
 
     def AddAt(this,x,y,z):
@@ -702,16 +703,16 @@ class Mendel():
         this.AddTurn_Y(180)
     
     def AddTurn_Y_down(this):
-        if this.prevBP.getOz() == 180:
-            this.AddTurn_Y(270) 
-        else:
-            this.AddTurn_Y(270)
+        #if this.prevBP.getOz() == 180:
+        #    this.AddTurn_Y(270) 
+        #else:
+        this.AddTurn_Y(270)
 
     def AddTurn_Y_up(this):
-        if this.prevBP.getOz() == 180:
-            this.AddTurn_Y(90)   
-        else:
-            this.AddTurn_Y(90)   
+        #if this.prevBP.getOz() == 180:  ### Coming back
+        #    this.AddTurn_Y(90)   
+        #else:
+        this.AddTurn_Y(90)# Coming up
         
     def testingAngle(this,A,B):
         #compare distance between angles

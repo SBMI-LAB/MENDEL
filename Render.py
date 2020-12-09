@@ -13,7 +13,9 @@ class RenderCad:
 
     BaseRibbon = None
     
-    lastname = ""    
+    lastname = ""  
+    
+    scaleX = 6
 
 
     def setHelices(this, helices):
@@ -116,8 +118,8 @@ class RenderCad:
         print("Rendering strand")
 
 
-        depth = 0.5
-        res = 4
+        depth = 0.2
+        res = 0.5
 
         obj2 = this.createSpline(SC_Coord, 2, False)         
         bpy.context.scene.collection.objects.link(obj2)
@@ -136,6 +138,9 @@ class RenderCad:
         spline = crv.splines.new(type='BEZIER')
         #spline.use_endpoint_u = True
         #spline.use_bezier_u = True
+        
+        for new_co in coords_list:
+            new_co[0] = new_co[0]/this.scaleX
         
 
         if closed: 
@@ -199,8 +204,8 @@ class RenderCad:
 
         stpInd = 1
 
-        depth = 0.5
-        res = 4
+        depth = 0.2
+        res = 0.5
 
         b = 0.5
         h = 0.5

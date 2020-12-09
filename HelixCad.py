@@ -563,11 +563,18 @@ class HelixCad():
                                         # ~ StapleRod.append(Rod)
                                         
                                         # ~ Row1.setStaple(x,Row2)
-                                        TT = Row1.setStapleNew(x,Row2, this.Parallel)
-                                        Attempts += 1
-                                        if TT != False:
-                                            this.StapleList.append( TT )
-                                            Activated += 1
+                                        
+                                        ### Check if BP or BP2 are in some turn
+                                        InTurn = False
+                                        if BP.inTurn == True or BP2.inTurn == True:
+                                            InTurn = True
+                                        
+                                        if InTurn == False:
+                                            TT = Row1.setStapleNew(x,Row2, this.Parallel)
+                                            Attempts += 1
+                                            if TT != False:
+                                                this.StapleList.append( TT )
+                                                Activated += 1
 
                                             
                         print ("Staples: " + str(Activated) + " , active: " + str(Activated))                   
@@ -727,6 +734,24 @@ class HelixCad():
         """
 
 
+        """
+        NEW EXTRA STEP: FUSE STAPLES TO FORM A S-SHAPED
+        STAPLE TO INCREASE STABILITY
+        
+        Search for each staple, check if it is marked
+        as fused, and then take each strand, count
+        the amount of bp or crossovers.
+        If the one is touching has certain amount of bp
+        they can be fused
+        """
+
+        for staple in this.StapleList:
+            if staple.isEnabled() and staple.Fused == False:
+                staple.Strand1.checkFuse()
+                staple.Strand2.checkFuse()
+                #staple.growEnd()
+                
+
         #for staple in this.StapleList:
         #    staple.growStapleStep()
 
@@ -874,6 +899,9 @@ class HelixCad():
                     corrected = False
                 #print(BP.getPosScaffold())   
                 #this.ElementList.remove(BP)
+        if corrected == False:
+            Last.Next = None
+            
         this.ElementList = El2    
             
             

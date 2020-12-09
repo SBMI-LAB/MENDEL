@@ -32,6 +32,8 @@ class Scaff():
     
     StapleObj = None
     
+    StapleStrand = None
+    
     x, y, z = 0,0,0
 
     sx,sy, sz = 0,0,0
@@ -55,6 +57,8 @@ class Scaff():
     PrevRod = None
     
     assigned = False
+    
+    inTurn = False
     
     # ~ asigned = 0
     
@@ -129,8 +133,13 @@ class Scaff():
 
     def setTurn(this, P) :
         ### Transform the position and rotate it
+        this.inTurn = True
+        
         if this.getPrev() != None :
             G = this.Prev.getXYZ()
+            
+            
+            
             this.x = G[0]
             this.y = G[1]
             this.z = G[2]
@@ -471,6 +480,7 @@ class Scaff():
         if this.oz > 360:
             this.oz = this.oz-360
         
+        this.inTurn = True
 
     
     def SetZAng (this, ang):
