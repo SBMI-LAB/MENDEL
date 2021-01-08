@@ -22,6 +22,11 @@ class SubRod():
     
     PrevStaple = None
     
+    RodList = None
+    RodCount = None
+    
+    
+    
     def SetInitial (this, n, BP):
         this.Initial = n
         
@@ -51,6 +56,80 @@ class SubRod():
         this.StapleList.append(Stp)
     
     
+    def AddToRodList(this, R):
+        
+        if R != this.Rod and R != None:
+            if not (R in this.RodList) :
+                this.RodList.append(R)
+                this.RodCount.append(1)
+                
+            else:
+                n = list.index(this.RodList,R)
+                this.RodCount[n] += 1
+                
+        
+                
+    
+    def genRodList (this):
+        this.RodList = []
+        this.RodCount = []
+        print("Generating list...")
+        if this.StapleList != None:
+            for staple in this.StapleList:
+                R1 = staple.getRod1()
+                R2 = staple.getRod2()
+                
+                this.AddToRodList(R1)
+                this.AddToRodList(R2)
+
+        #print(this.RodCount)    
+    def getStapleRod(this, staple):
+        R1 = staple.getRod1()
+        R2 = staple.getRod2()
+        if R1 != None and R1 != this.Rod:
+            return R1
+        if R2 != None and R2 != this.Rod:
+            return R2
+        
+    
+    def searchEssentials(this):
+        #### Will search through all staples
+        ### And select the essentials
+        ### This should try to 
+        
+        MinD = 7
+        
+        LStaple = this.StapleList[0]
+        LRod = this.RodList[0]
+        
+        if LStaple.NonEssential == False:
+            LStaple.Essential = True
+        
+        for staple in this.StapleList:
+            if staple != LStaple :
+                NRod = this.getStapleRod(staple)
+                
+                if staple.Essential == True:
+                    LStaple = staple
+                    LRod = NRod
+                else:
+                
+                    if NRod != LRod:
+                        C1 = staple.getCrossing()
+                        C2 = LStaple.getCrossing()
+                        D = abs(C1-C2)
+                        if D > MinD:
+                            LStaple = staple
+                            LStaple.Essential = True
+                            LRod = NRod
+                            staple.setVote(100)
+                        else:
+                            staple.NonEssential = True
+                            #staple.setVote(-100)
+                    
+            
+
+    
     def ReduceVote(this):
         # Vote for staples to reduce them
         # Eval some variables: starting from the length
@@ -70,7 +149,10 @@ class SubRod():
         
         
         None
+    
+    
         
+    
     def VoteDistance(this, staple):
         
         ## Extreme corner, but can cross

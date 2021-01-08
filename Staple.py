@@ -71,6 +71,10 @@ class Staple():
     
     Fused = False
     
+    Essential = False
+    
+    NonEssential = False
+    
     def setVote(this, val):
         this.Vote += val
     
@@ -662,6 +666,7 @@ class Staple():
                 this.Strand2.growStep()
 
 
+    
     def tryFuseStapleN(this, Minstp):
         ### Here, it will attempt to dissolve a staple
         ### And probably merge it with another when it 
@@ -1004,7 +1009,16 @@ class Staple():
     def isMerged(this):
         return this.Merged
 
-
+    
+    def dissolveStaple(this):
+        ## Try to dissolve staples
+        this.Strand1.dissolve()
+        this.Strand2.dissolve()
+        
+        this.Strand1.growEnd()
+        this.Strand2.growEnd()
+        
+        this.applyStaple()
 
 
     def mergeByTouchHead(this, Touch):

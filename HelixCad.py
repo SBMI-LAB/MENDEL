@@ -489,6 +489,7 @@ class HelixCad():
             
             Rod = 0
             
+            LastStp = 0
             
             # ~ print("What")
             
@@ -533,6 +534,8 @@ class HelixCad():
                             
                             if  BP != BP2 and type(BP) != tempty and type(BP2) != tempty:
                                 if BP.getNextStp() == None and BP.getPrevStp() == None and BP2.getNextStp() == None and BP2.getPrevStp()== None:
+                                #if True:    
+                                    
                                     ### Compare if the coordinates match
                                     
                                     #P1 = BP.getPosStp()
@@ -568,6 +571,16 @@ class HelixCad():
                                         InTurn = False
                                         if BP.inTurn == True or BP2.inTurn == True:
                                             InTurn = True
+                                            
+                                        #InTurn = False
+                                        
+                                        ### Workaround LastStp: Activate intervals
+                                        if InTurn == False:
+                                            LastStp += 1
+                                            if LastStp == 3:
+                                                InTurn = True
+                                                LastStp = 0
+                                        
                                         
                                         if InTurn == False:
                                             TT = Row1.setStapleNew(x,Row2, this.Parallel)
@@ -645,7 +658,7 @@ class HelixCad():
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
                 helixRod.genSubRods()
-                
+               
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
                 helixRod.reduceVote()
@@ -653,6 +666,7 @@ class HelixCad():
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
                 helixRod.reduceClean()
+        
         
         this.stepGrowStaples()
         
@@ -1142,4 +1156,19 @@ class HelixCad():
         #    print("Fila vacia")
             
         return empty
+    
+    
+    def stapleWorkarounds(this):
+        
+        this.removeOnCrossover()
+        
+    def removeOnCrossover(this):
+        
+        for BP in this.ElementList:
+            
+            if BP.inTurn == True:
+                ### check if it is in turn
+                if abs(BP.getStaple().Crossing - BP.x) < 5:
+                    ### Has to fuse staples
+                    BP.getStaple().dissolveStaple()
                     

@@ -103,6 +103,11 @@ class Mendel():
     growAxes = "Y"
     growSign = True
     
+    bp2end = 0
+    
+    def BP2End(this, bp):
+        this.bp2end = bp
+    
     def Stats(this):
         elapsed = time.time() - this.t
         print("======================")
@@ -443,7 +448,8 @@ class Mendel():
         height = width*height
 
         print("Creating system..." + str(height))
-
+        tX1 = 0
+        tX2 = 0
         while Exito == False:
             C = this.prevBP.getXYZ()
             CX = C[0]
@@ -456,8 +462,14 @@ class Mendel():
 
             print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
 
+            if CY == dY-2:
+                if oz == 0 or oz == 360:
+                    tX2 = this.bp2end
+                else:
+                    tX1 = this.bp2end
+
             if oz == 0 or oz == 360:
-                if CX < dX : ### I am in the range
+                if CX < dX -tX1 : ### I am in the range
                     this.AddBP()
                 else:
                     if CY == dY:
@@ -469,7 +481,7 @@ class Mendel():
                             this.AddTurn_Z_down()
 
             else:
-                if CX > pX : ### I am in the range
+                if CX > pX +tX2: ### I am in the range
                     this.AddBP()
                 else:
                     if CY == dY:
@@ -481,11 +493,11 @@ class Mendel():
                             this.AddTurn_Z_down()
 
         if oz == 0 or oz == 360:
-            this.GotoX(maxX)
+            this.GotoX(maxX-this.bp2end)
         else:
-            this.GotoX(minX)
+            this.GotoX(minX+this.bp2end)
 
-
+        this.bp2end = 0
 
 
 
@@ -581,7 +593,8 @@ class Mendel():
         minX = pX
 
         print("Creating system..." + str(height))
-
+        tX1 = 0
+        tX2 = 0
         while Exito == False:
             C = this.prevBP.getXYZ()
             CX = C[0]
@@ -593,9 +606,16 @@ class Mendel():
             oz = this.prevBP.getOz()
 
             print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
+            
+            if CY == dY-2:
+                if oz == 0 or oz == 360:
+                    tX2 = this.bp2end
+                else:
+                    tX1 = this.bp2end
+                
 
             if oz == 0 or oz == 360:
-                if CX < dX : ### I am in the range
+                if CX < dX -tX1 : ### I am in the range
                     this.AddBP()
                 else:
                     if CY == dY:
@@ -608,7 +628,7 @@ class Mendel():
                         
 
             else:
-                if CX > pX : ### I am in the range
+                if CX > pX +tX2: ### I am in the range
                     this.AddBP()
                 else:
                     if CY == dY:
@@ -618,14 +638,15 @@ class Mendel():
                             this.AddTurn_Y_up()         
                         else:
                             this.AddTurn_Z_up()
-
+            
+            
         
         if oz == 0 or oz == 360:
-            this.GotoX(maxX)
+            this.GotoX(maxX - this.bp2end)
         else:
-            this.GotoX(minX)
+            this.GotoX(minX + this.bp2end)
 
-
+        this.bp2end = 0
             
 
         
@@ -640,11 +661,11 @@ class Mendel():
 
 
         if (this.firstTime == False):
-            K.SetAngle(this.initial*this.pAng)
+            K.SetAngle(this.initial*this.pAng*0.5)
             #K.SetXAng(0)
             this.firstTime = True
             K.AddObj((this.initial,0,0))
-            this.currentAngle= this.initial*this.pAng
+            this.currentAngle= this.initial*this.pAng*0.5
             this.prevBP = K
         else:
             K.SetAngle(this.pAng)
@@ -695,12 +716,25 @@ class Mendel():
             tt = tt-360
         
         return tt
+
+    def GetXAngle2(this):
+        tt = this.prevBP.getAngleX()    
+        if tt < 0:
+            tt=tt+360
+        
+        if tt >= 360:
+            tt = tt-360
+            
+        if this.prevBP.getOz() == 180:
+            tt = tt-180
+        
+        return tt
     
     def AddTurn_Z_down(this):
-        this.AddTurn_Y(0)    
+        this.AddTurn_Z(0)    
     
     def AddTurn_Z_up(this):
-        this.AddTurn_Y(180)
+        this.AddTurn_Z(180)
     
     def AddTurn_Y_down(this):
         #if this.prevBP.getOz() == 180:
@@ -736,7 +770,7 @@ class Mendel():
         return abs(C)
              
 
-    def AddTurn_Z(this,n, targetAngle):
+    def AddTurn_Z_old(this,n, targetAngle):
         ### Add n BP and then continue
         ### until turn down in Y direction
         #targetAngle = 270
@@ -796,6 +830,83 @@ class Mendel():
             
 #        this.currentAngle = 0
 
+
+    def AddTurn_Z(this, targetAngle):
+        ### Add n BP and then continue
+        ### until turn down in Y direction
+        #targetAngle = 270
+        #testAng = abs(this.prevBP.getAngleX()-targetAngle)
+
+        ### If direction is negative, which angle should it turn?
+
+
+        GA =   this.GetXAngle2()-targetAngle      
+
+        testAng = abs(GA)
+        
+        #if GA > 0:
+        #    testAng += 360
+    
+        
+        cuenta = 0
+        lastAng = 0
+        
+        print("Xangle " + str(this.GetXAngle2()))
+        print("testang " + str(testAng))
+        print("pang " + str(this.pAng))
+        
+        while testAng > this.pAng:
+            this.AddBP()
+            #bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1) 
+            lastAng = this.GetXAngle2()
+            
+            GA = lastAng-targetAngle
+            
+            print(lastAng)
+            
+            testAng = abs(GA) 
+            
+            
+            
+            #if GA > 0:
+            #    testAng += 360
+            
+            
+            
+            cuenta = cuenta + 1
+            #print("R:")
+            #print (lastAng)
+            
+            if cuenta > 30:
+                testAng = 0
+        
+        #print("Last Angle")
+        #print(lastAng)
+        
+        if cuenta < 30:    
+        ### now Add another BP and rotate it
+            if this.prevBP.getOz() == 0 or this.prevBP.getOz() == 360:
+                this.AddBP()
+
+            this.prevBP.setTurn( (targetAngle) )
+
+            #this.prevBP.GetObj().location = (0,0,-2)            
+            #this.prevBP.GetObj().rotation_euler.rotate_axis("Z", radians(180))
+            #this.prevBP.GetObj().rotation_euler.rotate_axis("X", radians(180)) 
+            
+            #this.prevBP.addAngleX(180)       
+            #this.prevBP.TurnZ()
+            #this.prevBP.compensateX(testAng)
+            
+            #bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1) 
+            lastAng = this.GetXAngle()
+            #print("R:")
+            #print (lastAng)
+        
+        #print("End turn")    
+            
+#        this.currentAngle = 0
+
         
     def AddTurn_Y(this, targetAngle):
         ### Add n BP and then continue
@@ -809,11 +920,18 @@ class Mendel():
         testAng = abs(this.GetXAngle()-targetAngle)
         cuenta = 0
         lastAng = 0
+        
+        #print("Xangle " + str(this.GetXAngle()))
+        #print("testang " + str(testAng))
+        #print("pang " + str(this.pAng))
+        print("Angle " + str( this.GetXAngle()))
         while testAng > this.pAng:
             this.AddBP()
             #bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1) 
             lastAng = this.GetXAngle()
-            testAng = abs(lastAng-targetAngle)            
+            testAng = abs(lastAng-targetAngle)   
+            
+            print(lastAng)
             cuenta = cuenta + 1
             #print("R:")
             #print (lastAng)
@@ -995,6 +1113,7 @@ class Mendel():
 
                 this.HelCad.applyStaples()
 
+                this.HelCad.stapleWorkarounds()
                 #this.HelCad.CleanStaple()
 
 

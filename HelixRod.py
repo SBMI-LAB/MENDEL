@@ -116,10 +116,24 @@ class HelixRod():
             print("Subrods: " + str(len(this.SubRods)))
             
     
-    def reduceVote(this):
+    def reduceVote_Old(this):
         if this.SubRods != None:
             for NSubRod in this.SubRods:
                 NSubRod.ReduceVote()
+    
+    def reduceVote(this):
+        #This function should go through the SubRods, and compare
+        if this.SubRods != None:
+            for NSubRod in this.SubRods:
+                NSubRod.genRodList()
+                
+            for NSubRod in this.SubRods:
+                NSubRod.searchEssentials()
+                
+            for NSubRod in this.SubRods:
+                NSubRod.ReduceVote()
+                
+    
     
     def reduceClean(this):
         if this.SubRods != None:

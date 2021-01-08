@@ -60,6 +60,7 @@ class Strand():
         First = this.First = this.CurrentStrand[0]
         if First != None :
             #Next = this.First.getNext()
+            
             Next = this.First.getNextRod()
             if Next != None and Next != First:
                 dx = abs(Next.getX() - First.getX())
@@ -153,25 +154,49 @@ class Strand():
 
         First.setStaple(this.staple)
         
+    def dissolve(this):
+        for BP in this.CurrentStrand:
+            BP.setStaple(None)
+        
+        this.CurrentStrand.clear()
+        this.CurrentStrand.append(this.First)
+        this.Last = this.First
+        
+
+        
     def checkFuse(this):
         ### This should attempt a fuse with one touching
         ## Staple if both have a few count of bp
-        ...
         
-        """
-        if len(this.CurrentStrand) < 18 and len(this.CurrentStrand) > 0:
+        
+        minBP = 24
+        
+        if len(this.CurrentStrand) < minBP and len(this.CurrentStrand) > 0:
             ### Check if the limits can be joined
             if this.TouchingFirstStrand != None:
-                ### Check here                
-                if len(this.TouchingFirstStrand.CurrentStrand) < 18:
+                ### Check here 
+                #TBP = First
+                
+                if len(this.TouchingFirstStrand.CurrentStrand) < minBP:
                     ### Fuse!!!
-                    for item in this.TouchingFirstStrand.CurrentStrand:
-                        this.CurrentStrand.append(item)
+                    strd = this.TouchingFirstStrand.CurrentStrand
+                    nk = len(strd)
+                    
+                    for k in range(nk):
+                        #nBP = strd[-k-1]
+                        #if TBP.
+                        this.CurrentStrand.insert(0, strd[-k-1] )
+                        strd[-k-1].setStaple(this.staple)
+                        #this.CurrentStrand.append(strd[-k-1])
+                    
+                    #this.First = this.TouchingFirstStrand.First
+                    #for item in this.TouchingFirstStrand.CurrentStrand:
+                    #    this.CurrentStrand.append(item)
                     
                     this.TouchingFirstStrand.CurrentStrand.clear()
+                    #this.TouchingFirstStrand.Enabled = False
                     
                     
-        """            
                     
             
             

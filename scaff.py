@@ -162,7 +162,7 @@ class Scaff():
 
                 ### Compatibility with caDNAno orientation
                 if this.compatible == True:
-                    this.ox = 180 - this.ox
+                    this.ox = 180 - this.ox 
 
                 #this.ox = -this.ox + 180
                 
@@ -171,7 +171,9 @@ class Scaff():
                 
                 ### Compatibility with caDNAno orientation
                 if this.compatible == True:
-                    this.ox = 180 - this.ox 
+                    this.ox = 180 - this.ox
+            
+            
             
             this.updatePos()
 
@@ -317,6 +319,7 @@ class Scaff():
             aX = this.ox
         else:
             aX = this.ox + 180
+            #aX = 180 - this.ox 
 
         return aX
     
