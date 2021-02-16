@@ -22,10 +22,14 @@ class SubRod():
     
     PrevStaple = None
     
+    HelixRodList = None
+    
     RodList = None
     RodCount = None
     
+    RodStapleList = None
     
+    NumRods = 0
     
     def SetInitial (this, n, BP):
         this.Initial = n
@@ -59,6 +63,20 @@ class SubRod():
     def AddToRodList(this, R):
         
         if R != this.Rod and R != None:
+            CR = R.currentRod
+            if not (CR in this.RodList) :
+                this.RodList.append(CR)
+                this.RodCount.append(1)
+                this.NumRods += 1
+                this.HelixRodList.append(R)
+            else:
+                n = list.index(this.RodList,CR)
+                this.RodCount[n] += 1
+                
+        
+    def AddToRodList_Old(this, R):
+        
+        if R != this.Rod and R != None:
             if not (R in this.RodList) :
                 this.RodList.append(R)
                 this.RodCount.append(1)
@@ -67,20 +85,22 @@ class SubRod():
                 n = list.index(this.RodList,R)
                 this.RodCount[n] += 1
                 
-        
-                
     
     def genRodList (this):
+        this.HelixRodList = []
         this.RodList = []
         this.RodCount = []
+        this.RodStapleList = []
         print("Generating list...")
         if this.StapleList != None:
             for staple in this.StapleList:
-                R1 = staple.getRod1()
-                R2 = staple.getRod2()
+                #R1 = staple.getRod1()
+                #R2 = staple.getRod2()
+                R1 = this.getStapleRod(staple)
                 
                 this.AddToRodList(R1)
-                this.AddToRodList(R2)
+                this.RodStapleList.append(R1.currentRod)
+                #this.AddToRodList(R2)
 
         #print(this.RodCount)    
     def getStapleRod(this, staple):
@@ -97,35 +117,118 @@ class SubRod():
         ### And select the essentials
         ### This should try to 
         
-        MinD = 7
+        if this.StapleList == None:
+            return
+        
+        MinD = 12
         
         LStaple = this.StapleList[0]
         LRod = this.RodList[0]
         
-        if LStaple.NonEssential == False:
-            LStaple.Essential = True
+        RodLocal = this.Rod.currentRod
+        
+        RodSearch = this.RodList.copy()
+        
+        RodStaples = this.RodStapleList.copy()
+        
+        RodZessentials = []
+        RodZpositions = []
+        #print("RodSearch: " + str(len(RodSearch)))
+        iteracion = 0
+        lastRemove = 0
+        
+        recovery = False
+        
+        multRods = True
+        if len(RodSearch) == 1 or len(RodSearch) == 0:
+            multRods = False
+        #if LStaple.NonEssential == False:
+        #    LStaple.Essential = True
         
         for staple in this.StapleList:
-            if staple != LStaple :
-                NRod = this.getStapleRod(staple)
+            #if staple != LStaple :}
+            iteracion += 1
+            if iteracion-lastRemove > 100:
+                recovery = True
+                
+            NRod = this.getStapleRod(staple).currentRod    
+            if staple.NonEssential == False:
+                NRod = this.getStapleRod(staple).currentRod
                 
                 if staple.Essential == True:
-                    LStaple = staple
-                    LRod = NRod
-                else:
-                
-                    if NRod != LRod:
+                    
+                    if staple != LStaple:
                         C1 = staple.getCrossing()
                         C2 = LStaple.getCrossing()
                         D = abs(C1-C2)
-                        if D > MinD:
+                        
+                        
+                        if D < 7:
+                            ### The previous was wrong chosen
+                            LStaple.Essential = False
+                            LStaple.setVote(-500)
+                            LStaple.NonEssential = True
+                            
+                            #RodSearch = this.RodList.copy()  ## Restore the RodSearch
+                            RodSearch.clear()
+                            RodSearch.append(LRod)  ### Force the next that was erased!
+                            
+                            if len(RodZessentials) > 0:
+                                RodZessentials[-1] = NRod
+                            else:
+                                RodZessentials.append(NRod)
+                        else:
+                                                    
+                            RodZessentials.append(NRod)
+                        
+                        #RodZessentials.append(NRod)
+                        lastRemove = iteracion
+                        LStaple = staple
+                        LRod = NRod
+                        if NRod in RodSearch:
+                            RodSearch.remove(NRod)
+                            #LStaple.setVote(100)
+                        if len(RodSearch) == 0:
+                            RodSearch = this.RodList.copy()
+                else:
+                    
+                    if len(RodSearch) == 0 or recovery:
+                        RodSearch = this.RodList.copy()
+                        if multRods and recovery == False:
+                            RodSearch.remove(LRod)
+                        recovery = False
+                        print("Rebuild RodSearch")
+                    #if NRod != LRod:
+                    print("Rod Search: " + str(len(RodSearch)) + " | " + str(len(this.RodList)) + " | "   +str(len(this.StapleList)))
+                    #print(RodSearch)
+                    if NRod in RodSearch:
+                        C1 = staple.getCrossing()
+                        C2 = LStaple.getCrossing()
+                        D = abs(C1-C2)
+                        
+                        if D > MinD or D == 0:
                             LStaple = staple
                             LStaple.Essential = True
                             LRod = NRod
-                            staple.setVote(100)
+                            staple.setVote(500)
+                            RodZessentials.append(NRod)
+                            RodZpositions.append(C1)
+                            RodSearch.remove(NRod)
+                            lastRemove = iteracion
+                            #if len(RodSearch) == 0:
+                            #    RodSearch = this.RodList.copy()
+                            #    RodSearch.remove(NRod)
+                            #    print("Rebuild RodSearch")
+                            
                         else:
                             staple.NonEssential = True
-                            #staple.setVote(-100)
+                            staple.setVote(-100)
+                    else:
+                        staple.NonEssential = True
+                    #else:
+                        #if len(RodSearch) == 1:
+                    #    print("Wow")
+        print("Next")
                     
             
 
@@ -175,7 +278,7 @@ class SubRod():
         print("D2: " + str(D2))
         
         #minimum
-        Umbral = 2
+        Umbral = 4
         #staple.removeStaple()
         #Extreme corner
         if D1 < Umbral or D2 < Umbral:
@@ -188,7 +291,7 @@ class SubRod():
             
             staple.setVote(-10)
             #None
-        Umbral = 7
+        Umbral = 5
         #staple.removeStaple()
         if D1 < Umbral or D2 < Umbral:
             staple.setVote(-2)
@@ -222,9 +325,9 @@ class SubRod():
                     this.PrevStaple.setVote(10)
                     staple.removeStaple()
                     staple = this.PrevStaple
-                else:
-                    staple.setVote(10)
-                    this.PrevStaple.removeStaple()
+                #else:
+                #    staple.setVote(10)
+                #    this.PrevStaple.removeStaple()
                 
             
         this.PrevStaple = staple
@@ -238,7 +341,7 @@ class SubRod():
             print(len(this.StapleList))
             for staple in this.StapleList:
                 #clean umbral
-                VoteUmbral = 0
+                VoteUmbral = 10
                 if staple.getVote() < VoteUmbral:
                     staple.removeStaple()
                 

@@ -171,6 +171,19 @@ class Strand():
         
         minBP = 24
         
+        ### For debugging purposes
+        try:
+            ls = len(this.CurrentStrand)
+            cs = this.Crossing
+            TF = this.TouchingFirstStrand
+            R1 = this.First.getRod()
+            R2 = this.Last.getRod()
+            X1 = this.First.getX()
+            X2 = this.Last.getX()
+        except:
+            ...
+        #### For debugging purposes
+        
         if len(this.CurrentStrand) < minBP and len(this.CurrentStrand) > 0:
             ### Check if the limits can be joined
             if this.TouchingFirstStrand != None:

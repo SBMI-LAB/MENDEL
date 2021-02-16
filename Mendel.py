@@ -103,6 +103,8 @@ class Mendel():
     growAxes = "Y"
     growSign = True
     
+    backwards = False
+    
     bp2end = 0
     
     def BP2End(this, bp):
@@ -120,10 +122,10 @@ class Mendel():
         print("Total base pairs: " + str(len(this.Elements)))
         print(f'Generation time: {elapsed:.3f} seconds')
         
-        print("Previous: ")
-        print(this.prevSize)
-        print("After: ")
-        print(this.finalSize)
+        #print("Previous: ")
+        #print(this.prevSize)
+        #print("After: ")
+        #print(this.finalSize)
         
         ## Count scaffolds
         cuenta = 1
@@ -390,7 +392,7 @@ class Mendel():
             
             oz = this.prevBP.getOz()
 
-            print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
+            #print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
 
             if oz == 0 or oz == 360:
                 if CX < dX : ### I am in the range
@@ -460,7 +462,7 @@ class Mendel():
             
             oz = this.prevBP.getOz()
 
-            print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
+            #print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
 
             if CY == dY-2:
                 if oz == 0 or oz == 360:
@@ -532,7 +534,7 @@ class Mendel():
             
             oz = this.prevBP.getOz()
 
-            print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
+            #print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
 
             if oz == 0 or oz == 360:
                 if CX < dX : ### I am in the range
@@ -605,7 +607,7 @@ class Mendel():
             
             oz = this.prevBP.getOz()
 
-            print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
+            #print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
             
             if CY == dY-2:
                 if oz == 0 or oz == 360:
@@ -690,7 +692,7 @@ class Mendel():
         this.minZ = min(z,this.minZ)
 
 
-        K.getAngleX()
+        #K.getAngleX()
         #this.xAngle = K.getAngleX()
         #print(xAngle)
                     
@@ -706,6 +708,17 @@ class Mendel():
             #print (lastAng)
 
             
+    
+    def GetXAngleN(this):
+        tt = 0
+        if this.prevBP.getOz() == 0 or this.prevBP.getOz() == 360:
+            tt = this.currentAngle
+        else:
+            tt = 180-this.currentAngle
+        
+        if tt < 0:
+            tt=tt+360 
+        return tt
     
     def GetXAngle(this):
         tt = this.prevBP.getAngleX()    
@@ -844,16 +857,15 @@ class Mendel():
 
         testAng = abs(GA)
         
-        #if GA > 0:
-        #    testAng += 360
+        if GA > 0:
+            testAng += 360
     
         
         cuenta = 0
         lastAng = 0
         
-        print("Xangle " + str(this.GetXAngle2()))
-        print("testang " + str(testAng))
-        print("pang " + str(this.pAng))
+        print("Angle " + str( this.GetXAngle()) + " -> " + str(testAng))
+        
         
         while testAng > this.pAng:
             this.AddBP()
@@ -865,6 +877,7 @@ class Mendel():
             print(lastAng)
             
             testAng = abs(GA) 
+            print(str(lastAng) + " -> " + str(testAng))
             
             
             
@@ -917,21 +930,27 @@ class Mendel():
         ### If direction is negative, which angle should it turn?
 
 
-        testAng = abs(this.GetXAngle()-targetAngle)
+        testAng = (targetAngle-this.GetXAngle())
         cuenta = 0
         lastAng = 0
+        
+        if testAng < 0:
+            testAng += 360
         
         #print("Xangle " + str(this.GetXAngle()))
         #print("testang " + str(testAng))
         #print("pang " + str(this.pAng))
-        print("Angle " + str( this.GetXAngle()))
+        print("Angle " + str( this.GetXAngle()) + " -> " + str(testAng))
         while testAng > this.pAng:
             this.AddBP()
             #bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1) 
             lastAng = this.GetXAngle()
-            testAng = abs(lastAng-targetAngle)   
+            testAng = (targetAngle-lastAng)   
             
-            print(lastAng)
+            if testAng < 0:
+                testAng += 360
+            
+            print(str(lastAng) + " -> " + str(testAng))
             cuenta = cuenta + 1
             #print("R:")
             #print (lastAng)

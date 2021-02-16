@@ -468,7 +468,7 @@ class HelixCad():
     ## and mark them into the system
     def AnalyzeStaples(this):
 
-        umbral = 0.5 ### Maximum distance allowed to determine if a crossover is possible
+        umbral = 0.8 ### Maximum distance allowed to determine if a crossover is possible
         tlist =[]
         tempty = type(tlist)
         
@@ -639,7 +639,7 @@ class HelixCad():
     ### Reference is "The Last" and go backwards    
 
     def stepGrowStaples(this):
-        for n in range(7):
+        for n in range(4):
             for staple in this.StapleList:
                 ### Grow staples 
                 if staple.isEnabled():
@@ -655,15 +655,59 @@ class HelixCad():
 
         minStaple = 1
         
+        
+        
         for helixRod in this.Helices:
             if helixRod.isEmpty() == False:
                 helixRod.genSubRods()
-               
-        for helixRod in this.Helices:
-            if helixRod.isEmpty() == False:
-                helixRod.reduceVote()
+         
+        
+        NHelices = this.Helices.copy()
+        
+        NHelices.sort(key=lambda x: x.Neighbors, reverse=True)
+        
+        ### Temporal copy of helices to allow
+        ## Process them first the busy rods, and then the
+        ## Others
+        
+        
+        #### New version
+        
+        Reviewed = False
+        RevList = []
+        RevList.append(NHelices[0])
+        
+        while Reviewed == False:
+            
+            if len(RevList) > 0:
+                ### Take the first helix of the list
+                helixRod = RevList[0]
+                ## Remove it (FIFO)
+                RevList.remove(helixRod)
                 
-        for helixRod in this.Helices:
+                ## Check if it was already evaluated
+                if helixRod.IsEvaluated == False and helixRod.isEmpty() == False:
+                    # Compute
+                    helixRod.reduceVote()
+                    
+                    # Mark it
+                    helixRod.IsEvaluated = True
+
+                    # Add the neighbor rods to the list                    
+                    for Neig in helixRod.NeighborRods:
+                        if Neig.IsEvaluated == False:                            
+                            RevList.append(Neig)
+            else:
+                Reviewed = True
+                
+                  
+        
+        ### Original for each
+        #for helixRod in NHelices:
+        #    if helixRod.isEmpty() == False and helixRod.IsEvaluated == False:
+        #        helixRod.reduceVote()
+                
+        for helixRod in NHelices:
             if helixRod.isEmpty() == False:
                 helixRod.reduceClean()
         
@@ -687,15 +731,15 @@ class HelixCad():
         
         
         
-        for staple in this.StapleList:
-            if staple.isEnabled():
-                staple.growEnd()
+        #for staple in this.StapleList:
+        #    if staple.isEnabled():
+        #        staple.growEnd()
                 
 
 
         ## Last step: search for NT without staple
         
-        
+        """
         print("Filling blanks")
         for BP in this.ElementList:
             if BP != None:
@@ -708,7 +752,7 @@ class HelixCad():
                     SObj.growEnd()
                     this.StapleList.append(SObj)
                     #LastHelix.appendStaple(SObj)
-        
+        """
         
         #for helixRod in this.Helices:
         #    if helixRod.isEmpty() == False:
@@ -759,17 +803,38 @@ class HelixCad():
         they can be fused
         """
 
+        
         for staple in this.StapleList:
             if staple.isEnabled() and staple.Fused == False:
                 staple.Strand1.checkFuse()
                 staple.Strand2.checkFuse()
                 #staple.growEnd()
-                
+        
+        
+        for staple in this.StapleList:
+            if staple.isEnabled():
+                staple.growEnd()
+
+        print("Filling blanks")
+        for BP in this.ElementList:
+            if BP != None:
+                if BP.getStaple() == None:
+                    print("Blank found")
+                    ### Create new staple with this one
+                    SObj = Staple()
+                    #print(BP.getX())
+                    SObj.setSimpleStaple(BP)
+                    SObj.growEnd()
+                    this.StapleList.append(SObj)
+                    #LastHelix.appendStaple(SObj)        
 
         #for staple in this.StapleList:
         #    staple.growStapleStep()
 
+        
 
+                
+                
         #minStaple = 2
         #for helixRod in this.Helices:
         #    if helixRod.isEmpty() == False:
@@ -967,7 +1032,7 @@ class HelixCad():
             # final element, the bp itself, is x
             
             if  len (row) < this.maxPosition:
-                for k in range(len(row),this.maxPosition):
+                for k in range(len(row),this.maxPosition+1):
                     row.append([])
 
             
@@ -1159,8 +1224,8 @@ class HelixCad():
     
     
     def stapleWorkarounds(this):
-        
-        this.removeOnCrossover()
+        ...
+        #this.removeOnCrossover()
         
     def removeOnCrossover(this):
         

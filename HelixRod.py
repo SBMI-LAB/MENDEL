@@ -12,11 +12,17 @@ import math
 
 class HelixRod():
     
+    IsEvaluated = False
+    
+    NeighborRods = None
+    
     EmptySet = True
     
     currentRod = 0
     ispair = True
     row = []
+    
+    Neighbors = 0
     
     y = 0
     z = 0
@@ -85,7 +91,9 @@ class HelixRod():
                     if count > 0:
                        NSubRod.SetEnd(Prev.getX(), Prev)
                        this.SubRods.append(NSubRod)
+                       NSubRod.Rod = this
                        NSubRod = SubRod() # Create new one
+                       NSubRod.Rod = this
                        count = 0
                 else:
                     if count == 0:
@@ -112,8 +120,20 @@ class HelixRod():
                 this.SubRods.append(NSubRod)
                 
             
+            this.NeighborRods = []
             
             print("Subrods: " + str(len(this.SubRods)))
+            for NSubRod in this.SubRods:
+                NSubRod.genRodList()
+                this.Neighbors += NSubRod.NumRods
+                
+                ### Touching neighbors
+                for Neig in NSubRod.HelixRodList:
+                    this.NeighborRods.append(Neig)
+                    
+                
+                
+                
             
     
     def reduceVote_Old(this):
@@ -124,15 +144,19 @@ class HelixRod():
     def reduceVote(this):
         #This function should go through the SubRods, and compare
         if this.SubRods != None:
+            #for NSubRod in this.SubRods:
+            #    NSubRod.genRodList()
+            
+            
+            #this.SubRods.sort(key=lambda x: x.NumRods, reverse=True)
+            
             for NSubRod in this.SubRods:
-                NSubRod.genRodList()
-                
-            for NSubRod in this.SubRods:
-                NSubRod.searchEssentials()
-                
+                NSubRod.searchEssentials()    
+            
             for NSubRod in this.SubRods:
                 NSubRod.ReduceVote()
-                
+            
+            
     
     
     def reduceClean(this):

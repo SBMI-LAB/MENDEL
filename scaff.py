@@ -319,7 +319,7 @@ class Scaff():
             aX = this.ox
         else:
             aX = this.ox + 180
-            #aX = 180 - this.ox 
+            #aX = 360 - this.ox 
 
         return aX
     
