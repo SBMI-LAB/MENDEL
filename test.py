@@ -7,7 +7,27 @@ Created on Thu Apr 23 20:39:19 2020
 """
 
 from Mendel import Mendel
-import time
+
+
+
+"""
+Cad = Mendel()
+#Cad.setDraft()
+#Cad.Add(20)
+T = 40
+for k in range(3):
+    Cad.RectDown(T,4)
+for k in range(3):
+    Cad.RectUp(T,4)
+
+Cad.Growth("Z-")
+Cad.RectUp(7*T,4)
+
+
+Cad.writeCadnano("cadnano/test1.json")
+"""
+
+
 
 W = 210
 
@@ -50,7 +70,9 @@ Cad.Add(80)
 #Cad.Clean()
 
 #Cad.writeCadnano("cadnano/testbench3_B.json")
-Cad.writeCadnano("cadnano/test1B2.json")
+Cad.writeCadnano("cadnano/test1B3.json")
+
+
 
 #Cad.RenderRibbons()
 Cad.Stats()

@@ -122,6 +122,8 @@ class SubRod():
         
         MinD = 12
         
+        LastEssentialRemoved = -1
+        
         LStaple = this.StapleList[0]
         LRod = this.RodList[0]
         
@@ -148,7 +150,7 @@ class SubRod():
         for staple in this.StapleList:
             #if staple != LStaple :}
             iteracion += 1
-            if iteracion-lastRemove > 100:
+            if iteracion-lastRemove > 10:
                 recovery = True
                 
             NRod = this.getStapleRod(staple).currentRod    
@@ -158,25 +160,42 @@ class SubRod():
                 if staple.Essential == True:
                     
                     if staple != LStaple:
+                        
+                        
+                        
                         C1 = staple.getCrossing()
                         C2 = LStaple.getCrossing()
                         D = abs(C1-C2)
                         
                         
                         if D < 7:
-                            ### The previous was wrong chosen
-                            LStaple.Essential = False
-                            LStaple.setVote(-500)
-                            LStaple.NonEssential = True
                             
-                            #RodSearch = this.RodList.copy()  ## Restore the RodSearch
-                            RodSearch.clear()
-                            RodSearch.append(LRod)  ### Force the next that was erased!
                             
-                            if len(RodZessentials) > 0:
-                                RodZessentials[-1] = NRod
+                            LS_Rod = this.getStapleRod(LStaple).currentRod
+                            if LS_Rod == LastEssentialRemoved:
+                            ### Don't remove, instead, remove the other
+                                staple.Essential = False
+                                staple.NonEssential = True
+                                staple.setVote(-500)
+                                
+                                LastEssentialRemoved = NRod
+                            
                             else:
-                                RodZessentials.append(NRod)
+                                ### The previous was wrong chosen
+                                LStaple.Essential = False
+                                LStaple.setVote(-500)
+                                LStaple.NonEssential = True
+                                
+                                #RodSearch = this.RodList.copy()  ## Restore the RodSearch
+                                RodSearch.clear()
+                                RodSearch.append(LRod)  ### Force the next that was erased!
+                                
+                                LastEssentialRemoved = LS_Rod
+                                
+                                if len(RodZessentials) > 0:
+                                    RodZessentials[-1] = NRod
+                                else:
+                                    RodZessentials.append(NRod)
                         else:
                                                     
                             RodZessentials.append(NRod)
