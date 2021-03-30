@@ -48,8 +48,8 @@ class HelixCad():
             k += 1
             if this.maxPosition < pX[0]:
                 this.maxPosition = round(pX[0])+10
-
-        this.maxPosition = math.ceil(this.maxPosition/32)*32
+        
+        this.maxPosition = math.ceil(this.maxPosition/32)*32-1  ### Adjustment
         print("Total of " + str(k) + " elements")
         print("Max positions X: " + str(this.maxPosition))        
 
