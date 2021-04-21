@@ -715,6 +715,13 @@ class HelixCad():
         this.stepGrowStaples()
         
         
+        
+        ### Search for corners
+        for staple in this.StapleList:
+            staple.fixCrossingStaple()
+        
+        
+        
 #        for helixRod in this.Helices:
 #            if helixRod.isEmpty() == False:
 #                helixRod.ReduceStaples(minStaple)   
@@ -848,6 +855,10 @@ class HelixCad():
 
 
     def applyStaples(this):
+        
+        ### Search for corners
+        
+        
         for staple in this.StapleList:
             staple.applyStaple()
 

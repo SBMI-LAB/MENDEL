@@ -355,8 +355,8 @@ class Mendel():
 
         this.AddMore(d)
 
-    def RectUp(this, width, height):
-        this.AddRectUp(width, height)
+    def RectUp(this, width, height, shift = 0):
+        this.AddRectUp(width, height, shift)
 
     def RectDown(this,width, height):
         this.AddRect(width, height)        
@@ -562,13 +562,13 @@ class Mendel():
             this.GotoX(minX)
 
 
-    def AddRectUp(this, width , height) :
+    def AddRectUp(this, width , height, shift = 0) :
         ### Adds a rectangule forward with an specific size
         if this.prevBP == None:
             this.Add(1)
 
         P = this.prevBP.getXYZ()
-        pX = P[0]
+        pX = P[0] + shift ##  
         
         Ny = 1;
         

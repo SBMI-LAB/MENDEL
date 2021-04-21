@@ -73,7 +73,15 @@ class Staple():
     
     Essential = False
     
+    Required = False
+    
     NonEssential = False
+    
+    IsCornerStrand = False
+    
+    CornerSolved = False
+    
+    ForceCross = -1
     
     def setVote(this, val):
         this.Vote += val
@@ -1020,7 +1028,6 @@ class Staple():
         
         this.applyStaple()
 
-
     def mergeByTouchHead(this, Touch):
         ### This method will attempt to merge the strands to 
         ### the strands of the touching object.
@@ -1064,8 +1071,90 @@ class Staple():
                         FusingStrand.clear()
                         this.Merged = True                    
             
+    
+    def fixCrossingStaple(this):
+        ## This code will identify when one staple is in one corner:
+        ## If one arm is only one nucleotide lenght, merge it
+        
+        
+        Cross = this.Crossing
+        Fcross = this.ForceCross
+        
+        F1 = len(this.FirstStrand)
+        F2 = len(this.SecondStrand)
+        
+        
             
-
+        
+        D = 1
+        ## Check first strand:
+        
+        if this.CornerSolved == True:
+            return
+        
+        if this.IsCornerStrand == True:
+            print("Corner Strand")
+            ### How to solve it:
+            ##  1. Locate which is locked
+            if (F1 > 0):
+                F11 = this.FirstStrand[0].getX()
+                F12 = this.FirstStrand[-1].getX()
+                
+                if F11 == Cross or F12 == Cross or F11 == Fcross or F12 == Fcross:
+                    
+                    this.CornerSolved = True
+#                    if F11 == Cross or F11 == Fcross:
+#                        BP1 = this.FirstStrand[0]
+#                        BP2 = this.FirstStrand[1]
+##                        this.Strand2.restart(BP2, BP1)
+#                        this.FirstStrand.remove(BP1)
+#                        this.FirstStrand.remove(BP2)
+##                    
+#                    elif F12 == Cross or F12 == Fcross:
+#                        BP1 = this.FirstStrand[-1]
+#                        BP2 = this.FirstStrand[-2]
+##                        this.Strand2.restart(BP2, BP1)
+##                        
+#                        this.FirstStrand.remove(BP1)
+#                        this.FirstStrand.remove(BP2)
+                    this.Strand1.dissolve()
+                    #this.Strand1.tryFuse()
+                
+                
+            if F2 > 0 and this.CornerSolved == False:
+                F21 = this.SecondStrand[0].getX()
+                F22 = this.SecondStrand[-1].getX()
+                if F21 == Cross or F22 == Cross or F21 == Fcross or F22 == Fcross :
+                    this.CornerSolved = True
+#                    
+#                    
+#                    if F21 == Cross or F21 == Fcross:
+#                        BP1 = this.SecondStrand[0]
+#                        BP2 = this.SecondStrand[1]
+##                        this.Strand1.restart(BP2, BP1)
+###                        
+#                        this.SecondStrand.remove(BP1)
+#                        this.SecondStrand.remove(BP2)
+##                    
+#                    elif F12 == Cross or F12 == Fcross:
+#                        BP1 = this.SecondStrand[-1]
+#                        BP2 = this.SecondStrand[-2]
+##                        this.Strand1.restart(BP2, BP1)
+##                        
+#                        this.SecondStrand.remove(BP1)
+#                        this.SecondStrand.remove(BP2)
+                        
+                        
+                    this.Strand2.dissolve()
+                    #this.Strand2.tryFuse()
+            
+            #this.Strand1.tryFuse()
+            #this.Strand2.tryFuse()
+            
+            print("What next?")
+            
+        
+            
 
 
 

@@ -183,6 +183,9 @@ class Scaff():
         ### Will update positions of scaffold and stapples
         ### According to the xyz coordinates 
         ### and the orientations
+        
+        minGr = 0
+        
         if this.oz == 0 or this.oz == 360:
             ## perform direct rotation
             #print ("Case 1")
@@ -190,8 +193,11 @@ class Scaff():
             this.sy = this.pSep*sin(this.ox*radians(180)/180)
             this.sz = -this.pSep*cos(this.ox*radians(180)/180)
 
-            this.ly = -this.sSep*sin(this.ox*radians(180)/180)
-            this.lz = this.sSep*cos(this.ox*radians(180)/180)
+            
+            ## Staple
+
+            this.ly = -this.sSep*sin((this.ox+minGr)*radians(180)/180)
+            this.lz = this.sSep*cos((this.ox+minGr)*radians(180)/180)
 
             #print("z: " + str(this.sz) + " ang: " + str(this.ox))
 
@@ -201,8 +207,10 @@ class Scaff():
             this.sy = -this.pSep*sin(this.ox*radians(180)/180)
             this.sz = -this.pSep*cos(this.ox*radians(180)/180)
 
-            this.ly = this.sSep*sin(this.ox*radians(180)/180)
-            this.lz = this.sSep*cos(this.ox*radians(180)/180)
+            #Staple
+
+            this.ly = this.sSep*sin((this.ox-minGr)*radians(180)/180)
+            this.lz = this.sSep*cos((this.ox-minGr)*radians(180)/180)
 
 
         this.sx = this.x

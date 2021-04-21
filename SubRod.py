@@ -16,6 +16,9 @@ class SubRod():
     InitialRod = None
     EndingRod = None
     
+    InitialFolding = None
+    EndingFolding = None
+    
     Rod = None
     
     StapleList = None
@@ -40,6 +43,11 @@ class SubRod():
         if P != None:
             if P.getRod() != BP.getRod():
                 this.InitialRod = P.getRod()
+            else:
+                P = BP.getNext()
+                if P != None:
+                    if P.getRod() != BP.getRod():
+                        this.InitialRod = P.getRod()
         
         
         
@@ -51,6 +59,11 @@ class SubRod():
         if P != None:
             if P.getRod() != BP.getRod():
                 this.EndingRod = P.getRod()
+            else:
+                P = BP.getPrev()
+                if P != None:
+                    if P.getRod() != BP.getRod():
+                        this.EndingRod = P.getRod()
         
         
         
@@ -112,6 +125,85 @@ class SubRod():
             return R2
         
     
+    
+    def searchExtremeEssentials(this):
+        
+        ### It will look for folding (initial rod, ending rod)
+        ## And determine the staples in the opposite site
+        ## And mark it
+        
+        if this.StapleList == None:
+            return
+        
+        RodLocal = this.Rod.currentRod
+        
+        RodSearch = this.RodList.copy()
+        
+        RodStaples = this.RodStapleList.copy()
+        
+        stapleList = this.StapleList.copy();
+        
+        
+        ## Search for start staple
+        
+        InitStaple = None
+        EndStaple = None
+        
+        Pend = this.EndingRod
+        
+        PIni = this.InitialRod
+        
+        if Pend == PIni:
+            return
+        
+        pos = []
+        
+        if Pend != None:
+            ### Search the first staple to that rod
+            for InStaple in stapleList:
+                if  this.getStapleRod(InStaple).currentRod == Pend :
+                    InitStaple = InStaple
+                    InitStaple.Essential = True
+                    InitStaple.Required = True
+                    InitStaple.setVote(200)
+                    
+                    cc = InitStaple.getCrossing()
+                    
+                    if abs(cc - this.Initial) < 3:
+                        InitStaple.IsCornerStrand = True
+                        InitStaple.ForceCross = this.Initial
+                    
+                    pos.append(cc)
+                    
+                    break
+        
+        ## Search for ending staple
+        
+        stapleList.reverse()
+        
+        if PIni != None:
+            ### Search the first staple to that rod
+            for InStaple in stapleList:
+                if  this.getStapleRod(InStaple).currentRod == PIni :
+                    EndStaple =InStaple
+                    EndStaple.Essential = True
+                    EndStaple.Required = True
+                    EndStaple.setVote(200)
+                    
+                    cc = EndStaple.getCrossing()
+                    if abs(cc - this.Ending) < 3:
+                        EndStaple.IsCornerStrand = True
+                        EndStaple.ForceCross = this.Ending
+                    
+                    pos.append(EndStaple.getCrossing())
+                    break
+        
+        print("Essentials done")
+        
+        
+    
+    
+    
     def searchEssentials(this):
         #### Will search through all staples
         ### And select the essentials
@@ -157,9 +249,10 @@ class SubRod():
             if staple.NonEssential == False:
                 NRod = this.getStapleRod(staple).currentRod
                 
-                if staple.Essential == True:
+                if staple.Essential == True :
                     
-                    if staple != LStaple:
+                    #if staple != LStaple and staple.Required == False :
+                    if staple != LStaple :
                         
                         
                         
@@ -171,31 +264,39 @@ class SubRod():
                         if D < 7:
                             
                             
+                            
+                            
                             LS_Rod = this.getStapleRod(LStaple).currentRod
-                            if LS_Rod == LastEssentialRemoved:
+                            
+                            
+                            
+                            
+                            if LS_Rod == LastEssentialRemoved or LStaple.Required == True:
                             ### Don't remove, instead, remove the other
-                                staple.Essential = False
-                                staple.NonEssential = True
-                                staple.setVote(-500)
-                                
-                                LastEssentialRemoved = NRod
+                                if staple.Required == False:    
+                                    staple.Essential = False
+                                    staple.NonEssential = True
+                                    staple.setVote(-500)
+                                    
+                                    LastEssentialRemoved = NRod
                             
                             else:
                                 ### The previous was wrong chosen
-                                LStaple.Essential = False
-                                LStaple.setVote(-500)
-                                LStaple.NonEssential = True
-                                
-                                #RodSearch = this.RodList.copy()  ## Restore the RodSearch
-                                RodSearch.clear()
-                                RodSearch.append(LRod)  ### Force the next that was erased!
-                                
-                                LastEssentialRemoved = LS_Rod
-                                
-                                if len(RodZessentials) > 0:
-                                    RodZessentials[-1] = NRod
-                                else:
-                                    RodZessentials.append(NRod)
+                                if LStaple.Required == False:
+                                    LStaple.Essential = False
+                                    LStaple.setVote(-500)
+                                    LStaple.NonEssential = True
+                                    
+                                    #RodSearch = this.RodList.copy()  ## Restore the RodSearch
+                                    RodSearch.clear()
+                                    RodSearch.append(LRod)  ### Force the next that was erased!
+                                    
+                                    LastEssentialRemoved = LS_Rod
+                                    
+                                    if len(RodZessentials) > 0:
+                                        RodZessentials[-1] = NRod
+                                    else:
+                                        RodZessentials.append(NRod)
                         else:
                                                     
                             RodZessentials.append(NRod)
@@ -225,7 +326,7 @@ class SubRod():
                         C2 = LStaple.getCrossing()
                         D = abs(C1-C2)
                         
-                        if D > MinD or D == 0:
+                        if D > MinD :
                             LStaple = staple
                             LStaple.Essential = True
                             LRod = NRod
@@ -340,7 +441,7 @@ class SubRod():
                 this.PrevStaple.setVote(-5)
                 staple.setVote(-5)
                 
-                if this.PrevStaple.getVote() > staple.getVote() :
+                if this.PrevStaple.getVote() > staple.getVote() and staple.Essential != True:
                     this.PrevStaple.setVote(10)
                     staple.removeStaple()
                     staple = this.PrevStaple

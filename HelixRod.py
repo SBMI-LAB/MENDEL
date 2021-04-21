@@ -24,6 +24,8 @@ class HelixRod():
     
     Neighbors = 0
     
+
+    
     y = 0
     z = 0
     
@@ -73,6 +75,7 @@ class HelixRod():
         return this.ZPSa  
     
     def genSubRods(this):
+        ### Mark initial and ending foldings
         if this.SubRods == None:
             this.SubRods = []
             
@@ -96,6 +99,7 @@ class HelixRod():
                        NSubRod.Rod = this
                        count = 0
                 else:
+                    
                     if count == 0:
                        NSubRod.SetInitial(BP.getX(), BP)
                     stp = BP.getStaple()
@@ -113,10 +117,26 @@ class HelixRod():
                     Prev = BP
                     PrevStp = stp
                     
+                    ##### New code | split large rod
+                    Next = BP.getNext()
+                    if Next != None and count > 1:
+                        NRod = Next.getRod()
+                        if NRod != BP.getRod():
+                            ### Next BP is new
+                            NSubRod.SetEnd(Prev.getX(), Prev)
+                            NSubRod.Rod = this
+                            this.SubRods.append(NSubRod)
+                            NSubRod = SubRod() # Create new one
+                            NSubRod.Rod = this
+                            count = 0
+                    ### End splitting
+                    
+                    
                 PrevBP = BP
             
             if count > 0:
                 NSubRod.SetEnd(Prev.getX(), Prev)
+                NSubRod.Rod = this
                 this.SubRods.append(NSubRod)
                 
             
@@ -149,6 +169,11 @@ class HelixRod():
             
             
             #this.SubRods.sort(key=lambda x: x.NumRods, reverse=True)
+            
+            
+            for NSubRod in this.SubRods:
+                NSubRod.searchExtremeEssentials()
+            
             
             for NSubRod in this.SubRods:
                 NSubRod.searchEssentials()    

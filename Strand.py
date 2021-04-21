@@ -154,12 +154,24 @@ class Strand():
 
         First.setStaple(this.staple)
         
+    def restart(this, BP1, BP2):
+        for BP in this.CurrentStrand:
+            BP.setStaple(None)
+        
+        this.CurrentStrand.clear()    
+        this.First = BP1
+        this.Last = BP2
+        this.CurrentStrand.append(this.First)
+        this.CurrentStrand.append(this.Last)
+        
+        
+    
     def dissolve(this):
         for BP in this.CurrentStrand:
             BP.setStaple(None)
         
         this.CurrentStrand.clear()
-        this.CurrentStrand.append(this.First)
+        #this.CurrentStrand.append(this.First)
         this.Last = this.First
         
 
