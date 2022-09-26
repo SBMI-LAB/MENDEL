@@ -1136,6 +1136,7 @@ class HelixCad():
                         if type(BP)==tempty :
                             scafs += '[-1,-1,-1,-1]'
                             staps += '[-1,-1,-1,-1]'
+                            skips += '0'
                         else:
                             
                             ## Scaffold analysis    
@@ -1189,6 +1190,11 @@ class HelixCad():
                                 
                             staps += ']'
                             ## End of staple analysis
+                            
+                            if BP.Skip == True:
+                                skips += '-1'
+                            else:
+                                skips += '0'
    
                             
                         #staps += '[-1,-1,-1,-1]'
@@ -1197,7 +1203,7 @@ class HelixCad():
 
 
                         loops += '0'
-                        skips += '0'
+                        #skips += '0'
                         #end BP
                         x=x+1
                     

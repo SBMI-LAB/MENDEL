@@ -66,15 +66,24 @@ class Mendel():
     
     t = time.time()
     
+    Lattice="Square"
+    
+    CurrentSense = 0
+    prevAngle = 270
+    
     mode = "Wire"
     
     #direction = Vector((1,0,0))
+    
+    LimitBP = 8000
+    
+    OverLimit = False
     
     prevBP = None
     
     CurrentRow = None
     pAng = 720/21
-    
+    #pAng = 34.28
     
     firstTime = False
     
@@ -100,12 +109,64 @@ class Mendel():
     minY = 0
     minZ = 0
     
+    maxX = 0
+    maxY = 0
+    maxZ = 0
+    
     growAxes = "Y"
     growSign = True
     
     backwards = False
     
     bp2end = 0
+    
+    HCSet = 0 ## Honeycomb set to switch
+    
+    
+    def DistanceAng(this, A, B):
+        
+        ### Calculates the distance in angles 
+        ### Between A and B
+        A = this.AdjustAngle(A)
+        B = this.AdjustAngle(B)
+        
+        D = this.AdjustAngle(A-B)
+        if D > 180:
+            D = this.AdjustAngle(B-A)
+        return D
+    
+    def AdjustAngle(this, number):
+        
+        Valid = True
+        
+        if number > 360:
+            number = number - 360
+            Valid = False
+        if number < 0:
+            number = number + 360
+            Valid = False
+            
+        if Valid == False:
+            return this.AdjustAngle(number)
+        else:
+            ### Adjust precision
+            if abs(floor(number)-number) < 0.001:
+                number = floor(number)
+            elif abs(ceil(number)-number) < 0.001:
+                number = ceil(number)
+            
+            return number
+    
+    
+    
+    def BpTurn(this, number ):
+        this.pAng = 360/number
+    
+    def setCadnanoBpTurn(this):
+        this.BpTurn(10.67)
+    
+    def SetHoneyComb(this):
+        this.Lattice = "HoneyComb"
     
     def BP2End(this, bp):
         this.bp2end = bp
@@ -116,11 +177,24 @@ class Mendel():
         print("MENDEL")
         print("Created by Jorge Guerrero")
         print("North Carolina A&T State University")
-        print("V. 20.05.19") ## Year, Month, Day
+        print("V. 22.02.09") ## Year, Month, Day
         
         print("")
         print("Total base pairs: " + str(len(this.Elements)))
         print(f'Generation time: {elapsed:.3f} seconds')
+        
+        
+        dimX = abs (this.maxX - this.minX) + 1
+        dimY = abs (this.maxY - this.minY)/2 + 1 
+        dimZ = abs (this.maxZ - this.minZ)/2 + 1
+        
+        dimX = round( dimX * 0.34 )
+        dimY = round( dimY * 3 )
+        dimZ = round( dimZ * 3 )
+        
+        print("Expected dimensions:")
+        print("x,y,z: " + str(dimX) + ", " + str(dimY) + ", " + str(dimZ ) + " [ nm ]")
+        
         
         #print("Previous: ")
         #print(this.prevSize)
@@ -137,8 +211,23 @@ class Mendel():
                 Previo = BP
         print(f"Total: {cuenta} scaffolds")
         
+        if this.OverLimit:
+           print(f"Structure reached the maximum size: {this.LimitBP} BP ")
+           print("--To force it, modify the parameter LimitBP--")
         
         
+    def CheckMax(this):
+        
+        if this.Elements == None:
+            return True
+        
+        if this.LimitBP > len(this.Elements):
+            return True
+        else:
+            this.OverLimit = True
+            return False
+        
+    
     
     def Growth(this, sense = "Y+"):
         ### Define the orientation of growth for DNA
@@ -234,7 +323,9 @@ class Mendel():
         #this.initial = n
         this.AddAt(n,0,0)
         #this.AddBP()
-
+    
+    ang_offset=0
+    
     def AddAt(this,x,y,z):
         ### Tries to add a new BP independent of others
         
@@ -244,7 +335,7 @@ class Mendel():
         K.setId(this.c_id)
         this.c_id = this.c_id+1
         K.setMode(this.mode)
-        this.currentAngle= this.initial*this.pAng
+        this.currentAngle= this.initial*this.pAng + this.ang_offset
         K.SetAngle(this.currentAngle)
         K.SetXAng(0)
         this.firstTime = True
@@ -268,6 +359,10 @@ class Mendel():
         this.minX = min(x,this.minX)
         this.minY = max(y,this.minY)
         this.minZ = min(z,this.minZ)
+
+        this.maxX = max(x, this.maxX)
+        this.maxY = min(y, this.maxY)
+        this.maxZ = max(z, this.maxZ)
 
         K.getAngleX()		        
 
@@ -296,6 +391,10 @@ class Mendel():
         this.minX = min(x,this.minX)
         this.minY = max(y,this.minY)
         this.minZ = min(z,this.minZ)
+        
+        this.maxX = max(x, this.maxX)
+        this.maxY = min(y, this.maxY)
+        this.maxZ = max(z, this.maxZ)        
 
         K.getAngleX()		
 
@@ -358,8 +457,8 @@ class Mendel():
     def RectUp(this, width, height, shift = 0):
         this.AddRectUp(width, height, shift)
 
-    def RectDown(this,width, height):
-        this.AddRect(width, height)        
+    def RectDown(this,width, height, shift = 0):
+        this.AddRect(width, height, shift)        
 
     def AddRect_old(this, width , height) :
         ### Adds a rectangule forward with an specific size
@@ -383,6 +482,8 @@ class Mendel():
         print("Creating system..." + str(height))
 
         while Exito == False:
+            if this.CheckMax() == False:
+                break
             C = this.prevBP.getXYZ()
             CX = C[0]
             CY = -C[1]
@@ -417,8 +518,93 @@ class Mendel():
         else:
             this.GotoX(minX)
 
+    
+    def AddRect(this, width , height, shift = 0) :
+        ### Adds a rectangule forward with an specific size
+        if this.prevBP == None:
+            this.Add(1)
 
-    def AddRect(this, width , height) :
+        P = this.prevBP.getXYZ()
+        pX = P[0] + shift
+        
+        Ny = 1
+        if this.growAxes == "Z":
+            Ny = 2
+        
+        pY = -P[Ny]
+
+
+        if this.growSign:
+            dX = pX + width
+        else:
+            dX = pX
+            pX = pX - width
+        
+        
+        dY = pY + height*2
+
+        Exito = False
+
+        maxX = dX
+        minX = pX
+
+        height = width*height
+
+        print("Creating system..." + str(height))
+        tX1 = 0
+        tX2 = 0
+        while Exito == False:
+            if this.CheckMax() == False:
+                break
+            C = this.prevBP.getXYZ()
+            CX = C[0]
+            CY = -C[Ny]
+
+            minX = min(minX,CX)
+            maxX = max(maxX,CX)
+            
+            oz = this.prevBP.getOz()
+
+            #print( "Target : " + str(CX) + ": " + str(pX)  + " - "+ str(dX)  + " ==>" + str(oz)  )
+
+            if CY == dY-2:
+                if oz == 0 or oz == 360:
+                    tX2 = this.bp2end
+                else:
+                    tX1 = this.bp2end
+
+            if oz == 0 or oz == 360:
+                if CX < dX -tX1 : ### I am in the range
+                    this.AddBP()
+                else:
+                    if CY == dY:
+                        Exito = True
+                    else:
+                        if this.growAxes == "Y":
+                            this.AddTurn_Y_down()
+                        else:
+                            this.AddTurn_Z_down()
+
+            else:
+                if CX > pX +tX2: ### I am in the range
+                    this.AddBP()
+                else:
+                    if CY == dY:
+                        Exito = True
+                    else:
+                        if this.growAxes == "Y":
+                            this.AddTurn_Y_down()
+                        else:
+                            this.AddTurn_Z_down()
+
+        if oz == 0 or oz == 360:
+            this.GotoX(maxX-this.bp2end)
+        else:
+            this.GotoX(minX+this.bp2end)
+
+        this.bp2end = 0
+        
+    def AddRect_old_latest(this, width , height) :
         ### Adds a rectangule forward with an specific size
         if this.prevBP == None:
             this.Add(1)
@@ -453,6 +639,8 @@ class Mendel():
         tX1 = 0
         tX2 = 0
         while Exito == False:
+            if this.CheckMax() == False:
+                break
             C = this.prevBP.getXYZ()
             CX = C[0]
             CY = -C[Ny]
@@ -525,6 +713,9 @@ class Mendel():
         print("Creating system..." + str(height))
 
         while Exito == False:
+            if this.CheckMax() == False:
+                break
+            
             C = this.prevBP.getXYZ()
             CX = C[0]
             CY = C[1]
@@ -598,6 +789,11 @@ class Mendel():
         tX1 = 0
         tX2 = 0
         while Exito == False:
+            
+            if this.CheckMax() == False:
+                break
+            
+            
             C = this.prevBP.getXYZ()
             CX = C[0]
             CY = C[Ny]
@@ -650,37 +846,66 @@ class Mendel():
 
         this.bp2end = 0
             
-
+    
         
     def AddBP(this):
+        ang_offset=10
         K = Scaff()
+        K.baseRot = this.pAng
         K.setId(this.c_id)
         this.c_id = this.c_id+1
         K.setMode(this.mode)
 
+        
+        
         if this.Elements == None:
             this.Elements = []
-
-
+        
+        
+        
         if (this.firstTime == False):
-            K.SetAngle(this.initial*this.pAng*0.5)
+            print("Added initial")
+            
+            if (this.Lattice == "HoneyComb"):
+                ang_offset = 270
+                
+                
+            K.SetAngle(this.initial*this.pAng*0.5+ang_offset)
+            K.ox = ang_offset
             #K.SetXAng(0)
             this.firstTime = True
             K.AddObj((this.initial,0,0))
-            this.currentAngle= this.initial*this.pAng*0.5
+            this.currentAngle= this.initial*this.pAng*0.5+ang_offset
             this.prevBP = K
+            
+                
+            
         else:
             K.SetAngle(this.pAng)
             K.AddObj((1,0,0))
             K.SetPrev(this.prevBP)
             this.currentAngle= this.currentAngle+this.pAng
+            
+            ## Reset for precision issues
+            if abs(floor(this.currentAngle)-this.currentAngle) < 0.001:
+                this.currentAngle = floor(this.currentAngle)
+            elif abs(ceil(this.currentAngle)-this.currentAngle) < 0.001:
+                this.currentAngle = ceil(this.currentAngle)
+            
         
         this.prevBP = K
 
         this.Elements.append(this.prevBP)
 
-        if (this.currentAngle >= 360):
-            this.currentAngle = this.currentAngle - 360
+#        if (this.currentAngle >= 360):
+#            this.currentAngle = this.currentAngle - 360
+        
+        this.currentAngle = this.AdjustAngle(this.currentAngle)
+        
+        #print("Current angle")
+        #print(this.GetXAngle())
+        # print("pAng")
+        # print(this.pAng)
         
         
         Ppos = this.prevBP.getXYZ()
@@ -692,14 +917,27 @@ class Mendel():
         this.minZ = min(z,this.minZ)
 
 
+        this.maxX = max(x, this.maxX)
+        this.maxY = min(y, this.maxY)
+        this.maxZ = max(z, this.maxZ)
+
+#        print("Angle: ")
+#        print(round(this.currentAngle))
         #K.getAngleX()
         #this.xAngle = K.getAngleX()
         #print(xAngle)
                     
 
     def AddMore(this, n):
+        
         for k in range(n):
-            this.AddBP();
+            if this.CheckMax():
+                this.AddBP();
+            else:
+                break
+            
+            
+                
             
             
             #bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1) 
@@ -731,35 +969,52 @@ class Mendel():
         return tt
 
     def GetXAngle2(this):
-        tt = this.prevBP.getAngleX()    
+        tt = this.prevBP.getAngleX() 
+        
+        if this.prevBP.getOz() == 180:
+            tt = tt-180        
+        
         if tt < 0:
             tt=tt+360
         
         if tt >= 360:
             tt = tt-360
             
-        if this.prevBP.getOz() == 180:
-            tt = tt-180
+
         
         return tt
     
     def AddTurn_Z_down(this):
-        this.AddTurn_Z(0)    
+        if this.Lattice == "Square":
+            this.AddTurn_Z(0)
+        if this.Lattice == "HoneyComb":
+            this.AddTurn_H(180)
     
     def AddTurn_Z_up(this):
-        this.AddTurn_Z(180)
+        if this.Lattice == "Square":
+            this.AddTurn_Z(180)
+        if this.Lattice == "HoneyComb":
+            this.AddTurn_H(0)
     
     def AddTurn_Y_down(this):
         #if this.prevBP.getOz() == 180:
         #    this.AddTurn_Y(270) 
         #else:
-        this.AddTurn_Y(270)
+        
+        
+        if this.Lattice == "Square":
+            this.AddTurn_Y(270)
+        if this.Lattice == "HoneyComb":
+            this.AddTurn_H(270)
 
     def AddTurn_Y_up(this):
         #if this.prevBP.getOz() == 180:  ### Coming back
         #    this.AddTurn_Y(90)   
         #else:
-        this.AddTurn_Y(90)# Coming up
+        if this.Lattice == "Square":
+            this.AddTurn_Y(90)# Coming up
+        if this.Lattice == "HoneyComb":
+            this.AddTurn_H(90)  
         
     def testingAngle(this,A,B):
         #compare distance between angles
@@ -852,37 +1107,36 @@ class Mendel():
 
         ### If direction is negative, which angle should it turn?
 
+        if targetAngle == 0:
+            targetAngle = 360
 
         GA =   this.GetXAngle2()-targetAngle      
 
         testAng = abs(GA)
         
-        if GA > 0:
+        if GA <= 0:
             testAng += 360
     
         
         cuenta = 0
         lastAng = 0
+        print("Target: " + str(targetAngle))
+        print("Doing Z turn, Angle " + str( this.GetXAngle()) + " -> " + str(testAng))
         
-        print("Angle " + str( this.GetXAngle()) + " -> " + str(testAng))
         
-        
-        while testAng > this.pAng:
+        while testAng > this.pAng+0.5:
             this.AddBP()
             #bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1) 
             lastAng = this.GetXAngle2()
-            
             GA = lastAng-targetAngle
             
-            print(lastAng)
-            
             testAng = abs(GA) 
-            print(str(lastAng) + " -> " + str(testAng))
+            print("Angle: " + str(lastAng) + " -> " + str(testAng))
             
             
             
-            #if GA > 0:
-            #    testAng += 360
+            if GA > 0:
+                testAng += 360
             
             
             
@@ -899,6 +1153,8 @@ class Mendel():
         if cuenta < 30:    
         ### now Add another BP and rotate it
             if this.prevBP.getOz() == 0 or this.prevBP.getOz() == 360:
+                this.AddBP()
+            else:
                 this.AddBP()
 
             this.prevBP.setTurn( (targetAngle) )
@@ -921,7 +1177,7 @@ class Mendel():
 #        this.currentAngle = 0
 
         
-    def AddTurn_Y(this, targetAngle):
+    def AddTurn_Y_deprecated(this, targetAngle):
         ### Add n BP and then continue
         ### until turn down in Y direction
         #targetAngle = 270
@@ -986,6 +1242,174 @@ class Mendel():
 #        this.currentAngle = 0
 
         
+   
+    def AddTurn_Y(this, targetAngle):
+        ### Add n BP and then continue
+        ### until turn down in Y direction
+        #targetAngle = 270
+        #testAng = abs(this.prevBP.getAngleX()-targetAngle)
+
+        ### If direction is negative, which angle should it turn?
+
+
+        testAng = (targetAngle-this.GetXAngle())
+        cuenta = 0
+        lastAng = 0
+        
+        if testAng < 0:
+            testAng += 360
+        
+
+        print("Doing Y turn, Angle " + str( this.GetXAngle()) + " -> " + str(testAng))
+        
+        while testAng > this.pAng:
+            this.AddBP()
+            #bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1) 
+            lastAng = this.GetXAngle()
+            testAng = (targetAngle-lastAng)   
+            
+            if testAng < 0:
+                testAng += 360
+            
+            print(str(lastAng) + " -> " + str(testAng))
+            cuenta = cuenta + 1
+            #print("R:")
+            #print (lastAng)
+            
+            if cuenta > 30:
+                testAng = 0
+        
+        
+        if cuenta < 30:    
+        ### now Add another BP and rotate it
+            if this.prevBP.getOz() == 0 or this.prevBP.getOz() == 360:
+                print("Adding last BP")
+                this.AddBP()
+            else:
+                print("Adding last BP2")
+                this.AddBP()
+
+            this.prevBP.setTurn( (targetAngle) )
+
+            lastAng = this.GetXAngle()
+
+
+    def AddTurn_H(this, targetAngle):
+        ### Add n BP and then continue
+        ## Modified version for HoneyComb
+        
+        ## This follows the Square Model
+        ## And adapts to the HoneyComb
+        ## The Target Angle is computed with 
+        ## Respect to the last position
+        ## Let's see how this will work
+        
+        ## Target = 0, 90, 180, 270
+        ## New target: 270, 30, 150
+        ## New target: 120, 240, 90
+        
+        nt1 = [ 0, 90, 180, 270 ]
+        ##    [ Z+, Y+, Z-, Y- ]
+        
+        
+        t1  = [ 30, 150, 150, 270 ]
+        t1b = [ 30, 30, 150, 270 ]
+        t2  = [ 330, 90,  210, 210 ]
+        t2b = [ 330, 90,  210, 330 ]
+        
+#        this.HCSet = 0
+        
+        
+        if this.HCSet == 1:
+            t1 = t1b
+            t2 = t2b
+        
+            
+        
+        newtarget = 0
+        
+        ## Control Variables:
+        print(this.prevAngle)  ## Honeycomb angle
+        print(this.CurrentSense) ## Square reference
+        
+        opcs = nt1.index(targetAngle)
+#        if this.CurrentSense == targetAngle:
+        
+        if this.prevAngle in t1:
+            newtarget = t1[opcs]
+            if opcs == 1:
+                if this.HCSet == 0:
+                    this.HCSet = 1
+                else:
+                    this.HCSet = 0
+        else:
+            newtarget = t2[opcs]
+            if opcs == 3:
+                if this.HCSet == 0:
+                    this.HCSet = 1
+                else:
+                    this.HCSet = 0
+            
+#        newtarget = this.prevAngle;
+#        newtarget = this.AdjustAngle(this.prevAngle + 120)
+        
+        
+#        if this.prevAngle in t1        
+        
+        
+        this.prevAngle = this.AdjustAngle(newtarget+180)
+        
+        targetAngle = newtarget
+        
+        print("Target: ")
+        print(round(targetAngle))
+        
+#        offNewAngle = this.pAng
+        
+        
+        
+        
+
+        testAng = (targetAngle-this.GetXAngle())
+        cuenta = 0
+        lastAng = 0
+        
+        testAng = this.AdjustAngle(testAng) 
+        
+
+        print("Doing H turn, Angle " + str( this.GetXAngle()) + " -> " + str(testAng))
+        
+        while testAng > 2: ## Honeycomb has exact angles
+            this.AddBP()
+            #bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1) 
+            lastAng = this.GetXAngle() 
+            
+            testAng = this.DistanceAng(targetAngle,lastAng)   
+            
+#            print(str(lastAng) + " -> " + str(testAng))
+            cuenta = cuenta + 1
+            #print("R:")
+            #print (lastAng)
+            
+#            print("L: " + str( round(lastAng)) + "  N: " + str( round(testAng)) )
+            if cuenta > 30:
+                testAng = 0
+        
+        print ("R: " + str(lastAng))
+        if cuenta < 30:    
+        ### now Add another BP and rotate it
+            if this.prevBP.getOz() == 0 or this.prevBP.getOz() == 360:
+#                print("Adding last BP")
+                this.AddBP()
+            else:
+#                print("Adding last BP2")
+                this.AddBP()
+
+            this.prevBP.setTurnH( targetAngle )
+
+            lastAng = this.GetXAngle()
+    
+    
     
     def AddRow(this,x,y,z):
         #pAng = -5*360/20
@@ -1165,6 +1589,26 @@ class Mendel():
 
         this.HelCad.writeFile(filename)
 
+    
+    def SetSkips(this):
+        ### Analyse the structure and search differences
+        ## Between 10.5 bp per turn and 10.67, then align
+        bAng = 720/21  ### 10.5
+        
+        cAng = (10-bAng)/2
+        
+        for BP in this.Elements:
+            dAng = BP.ox
+            difference = this.AdjustAngle(dAng - cAng)
+            
+            
+            if difference < 180:
+                cAng  = this.AdjustAngle( cAng + bAng )
+            else:
+                BP.Skip = True
+            
+    
+    
     def CleanAll(this):
         bpy.ops.object.select_all(action='SELECT')
         bpy.ops.object.delete(use_global=False, confirm=False)
@@ -1185,7 +1629,9 @@ class Mendel():
         this.analyzeStructure()
         render = RenderCad()
         render.setHelices(this.HelCad)
-        render.RenderCylinders(res)
+        minvector = [this.minX, this.minY, this.minZ]
+        
+        render.RenderCylinders(res, minvector )
 
     def RenderRibbons(this):
         

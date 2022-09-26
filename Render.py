@@ -15,25 +15,26 @@ class RenderCad:
     
     lastname = ""  
     
-    scaleX = 6
+    scaleX = 3.5
 
 
     def setHelices(this, helices):
         this.Helices = helices
 
-    def Generate(this, xini, xfin):
+    def Generate(this, xini, xfin, minvectors):
 
         L = abs(xini-xfin)
-        xpos = min((xini,xfin))
+        xpos = min((xini,xfin)) + minvectors[0]
         #print ("Xinit: " + str(xini) + "  Xfin: " + str(xfin))
 
         xpos = xpos + L/2
-
+        xpos = xpos/this.scaleX
+        L=L/this.scaleX
         if L > 0 :
             
             #print("Creating cylinder of L : " + str(L) )
 
-            bpy.ops.mesh.primitive_cylinder_add(vertices=this.vertices, radius = 1, depth = L, location=(xpos,-this.y,this.z), rotation=(0,radians(90),0))
+            bpy.ops.mesh.primitive_cylinder_add(vertices=this.vertices, radius = 0.8, depth = L, location=(xpos,-this.y+minvectors[1]*2,this.z+minvectors[2]*2), rotation=(0,radians(90),0))
             bpy.context.active_object.name = 'z_mendel_object_name'
             this.lastname = bpy.context.active_object.name
 
@@ -48,7 +49,7 @@ class RenderCad:
 
     
     
-    def RenderCylinders(this, vertices=5):
+    def RenderCylinders(this, vertices, minvectors):
         ## Should generate cilinders in blender
         print("Rendering...")
 
@@ -78,6 +79,7 @@ class RenderCad:
                     genera = False
 
                     x = BP.getX()
+                    #x = BP.getPosScaffold()[0]
 
                     R = BP.getRod()
 
@@ -102,14 +104,14 @@ class RenderCad:
                         #print("Generating: " + str(xinit) + ", " + str(xfin))
                         if xinit >= 0 and xfin >= 0 :
 
-                            this.Generate(xinit, xfin)
+                            this.Generate(xinit, xfin, minvectors)
 
                         xinit = x
                         xfin = x
 
                             #xinit = -10
                             #xfin = -10
-            this.Generate(xinit,xfin)
+            this.Generate(xinit,xfin, minvectors)
 
 
 
@@ -125,7 +127,7 @@ class RenderCad:
         bpy.context.scene.collection.objects.link(obj2)
         #obj2.data.bevel_object = obj1
         obj2.data.bevel_depth = depth
-        obj2.data.bevel_resolution = res
+        obj2.data.bevel_resolution = int(res)
         
         bpy.data.objects[-1].data.materials.append(bpy.data.materials[mat])
         obj2.data.twist_mode = 'Z_UP'
@@ -283,7 +285,7 @@ class RenderCad:
                         objN = this.createSpline(coordN, 3, False)         
                         bpy.context.scene.collection.objects.link(objN)
                         objN.data.bevel_depth = depth
-                        objN.data.bevel_resolution = res
+                        objN.data.bevel_resolution = int(res)
                         #bpy.data.objects[-1].data.materials.append(bpy.data.materials[stpInd])
                         bpy.data.objects[this.lastname].data.materials.append(bpy.data.materials[stpInd])
                         stpInd += 1
@@ -297,10 +299,11 @@ class RenderCad:
 
     def addIntermediate (this, BP1, BP2, coordN):
         if BP1 != None and BP2 != None :
-            P = BP1.getPosStp()
-            P2 = BP2.getPosStp()
-            C = [  (P[0]+P2[0])/2, (P[1]+P2[1])/2, (P[2]+P2[2])/2 ]
-            coordN.append( C )
+            if BP1.getRod() == BP2.getRod():            
+                P = BP1.getPosStp()
+                P2 = BP2.getPosStp()
+                C = [  (P[0]+P2[0])/2, (P[1]+P2[1])/2, (P[2]+P2[2])/2 ]
+                coordN.append( C )
 
 
     def renderAsyStrand(this, g, Coords, mat):

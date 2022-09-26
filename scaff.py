@@ -16,9 +16,9 @@ class Scaff():
     r_id = 0
     p_id = 0
     
-    pSep = 0.7
+    pSep = 0.8
     
-    sSep = 1
+    sSep = 0.8
     
     Ob_center = None
     Ob_scaf = None
@@ -41,6 +41,10 @@ class Scaff():
     lx,ly,lz = 0,0,0
     
     ox,oy,oz = 0,0,0
+    
+    ### honeycomb related
+    hx, hy, hz = 0,0,0
+    
 
     ang = 0
     
@@ -60,7 +64,11 @@ class Scaff():
     
     inTurn = False
     
+    #Minnor grove angle
+    minGr = -0
     # ~ asigned = 0
+    
+    Skip = False
     
     def setNextRod(this, BP):
         if this.getRod() == BP.getRod():
@@ -130,7 +138,35 @@ class Scaff():
                 this.Ob_center.location = (this.x,this.y,this.z)            
 
 
-
+    def setTurnH(this, TargetAngle):
+        ### Do the changes for the Honeycomb
+        this.inTurn = True
+        
+        if this.getPrev() != None :
+            ## Reset coordinates
+            G = this.Prev.getXYZ()
+            this.x = G[0]
+            this.y = G[1]
+            this.z = G[2]
+            
+            this.y = this.y + 2*sin(radians(TargetAngle))
+            this.z = this.z + 2*cos(radians(TargetAngle))
+            
+            #this.ox = this.ox - 180
+            
+            if this.oz == 0 or this.oz == 360:
+                this.oz = 180
+                this.ox = this.ox 
+            else:
+                this.oz = 0
+                this.ox = this.ox + 3*this.baseRot
+                #this.ox = this.ox + 2*this.baseRot
+            
+            
+            
+            
+        
+    
     def setTurn(this, P) :
         ### Transform the position and rotate it
         this.inTurn = True
@@ -146,13 +182,15 @@ class Scaff():
 
             
             if P == 270 or P == 270 - this.baseRot:
+                print("Turn 270")
                 this.y += -2
             
             if P == 90 or P == 90 - this.baseRot:
                 this.y += 2
 
-            if P == 0: 
+            if P == 0 or P == 360: 
                 this.z += -2
+                P = 0
             
             if P == 180:
                 this.z += 2
@@ -160,18 +198,23 @@ class Scaff():
             if this.oz == 0 or this.oz == 360:
                 this.oz = 180
 
+                print("Case 1")
                 ### Compatibility with caDNAno orientation
                 if this.compatible == True:
+                    print(this.ox)
+                    if this.ox > P:
+                        this.ox = this.ox-this.baseRot
+                        
                     this.ox = 180 - this.ox 
 
                 #this.ox = -this.ox + 180
                 
             else:
                 this.oz = 0
-                
+                print("Case 2")
                 ### Compatibility with caDNAno orientation
                 if this.compatible == True:
-                    this.ox = 180 - this.ox
+                    this.ox = 180 - this.ox+this.baseRot
             
             
             
@@ -184,7 +227,8 @@ class Scaff():
         ### According to the xyz coordinates 
         ### and the orientations
         
-        minGr = 0
+        ## Minor grove angle
+        minGr = this.minGr
         
         if this.oz == 0 or this.oz == 360:
             ## perform direct rotation
@@ -465,10 +509,16 @@ class Scaff():
         
         
         #if this.oz == 0 :
-        this.ox = ang+this.ang
+        this.ox = ang+this.ang 
+        
+        
         #else:
         #    this.ox = ang - this.ang
-            
+           
+        if abs(floor(this.ox)-this.ox) < 0.001:
+            this.ox = floor(this.ox)
+        elif abs(ceil(this.ox)-this.ox) < 0.001:
+            this.ox = ceil(this.ox)
 
         if this.ox > 360:
             this.ox=this.ox - 360
