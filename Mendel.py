@@ -1597,8 +1597,12 @@ class Mendel():
         
         cAng = (10-bAng)/2
         
+        dAng = this.Elements[0].ox
+        
         for BP in this.Elements:
-            dAng = BP.ox
+            #dAng = BP.ox
+            dAng = this.AdjustAngle(dAng + this.pAng)
+            
             difference = this.AdjustAngle(dAng - cAng)
             
             
