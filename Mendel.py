@@ -177,7 +177,7 @@ class Mendel():
         print("MENDEL")
         print("Created by Jorge Guerrero")
         print("North Carolina A&T State University")
-        print("V. 22.02.09") ## Year, Month, Day
+        print("V. 22.10.25") ## Year, Month, Day
         
         print("")
         print("Total base pairs: " + str(len(this.Elements)))
