@@ -66,6 +66,8 @@ class Mendel():
     
     t = time.time()
     
+    Cleaned = False
+    
     Lattice="Square"
     
     CurrentSense = 0
@@ -1618,6 +1620,14 @@ class Mendel():
         bpy.ops.object.delete(use_global=False, confirm=False)
 
     def Clean(this):
+        
+        
+        if this.Cleaned == True:
+            return
+        
+        this.Cleaned = True
+        
+        
         bpy.ops.object.select_all(action='SELECT')
         
         ## Omit objects that are not object_name*
@@ -1630,6 +1640,8 @@ class Mendel():
     
     def RenderCylinders(this, res = 5):
         
+        this.Clean()
+        
         this.analyzeStructure()
         render = RenderCad()
         render.setHelices(this.HelCad)
@@ -1638,6 +1650,8 @@ class Mendel():
         render.RenderCylinders(res, minvector )
 
     def RenderRibbons(this):
+        
+        this.Clean()
         
         this.analyzeStructure()
         render = RenderCad()
