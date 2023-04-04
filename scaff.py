@@ -20,6 +20,8 @@ class Scaff():
     
     sSep = 0.8
     
+    HCSet = 0 ## Honeycomb set to switch
+    
     Ob_center = None
     Ob_scaf = None
     Ob_link = None
@@ -113,6 +115,10 @@ class Scaff():
         this.x += x
         this.y += y
         this.z += z
+        
+        this.hx += x
+        this.hy += abs(int(y))
+        this.hz += abs(int(z))
 
 
     def setStaple(this, staple):
@@ -161,6 +167,17 @@ class Scaff():
                 this.oz = 0
                 this.ox = this.ox + 3*this.baseRot
                 #this.ox = this.ox + 2*this.baseRot
+                
+        ### Set hy and hz according to the target angle
+        TA = [330,270, 210, 30, 90, 150]
+        dhz = [1,  0,   -1,  1, 0, -1]
+        dhy = [0,  1,    0,  0, -1, 0]
+        
+        for kn in range(len(TA)):
+            if TA[kn] == TargetAngle:
+                this.hy += 2*dhy[kn]
+                this.hz += 2*dhz[kn]
+            
             
             
             
@@ -478,6 +495,10 @@ class Scaff():
 
                 this.y += P[1]
                 this.z += P[2]
+                
+                this.hx = this.x
+                this.hy = Prev.hy
+                this.hz = Prev.hz
 
                 
 

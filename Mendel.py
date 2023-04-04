@@ -533,7 +533,7 @@ class Mendel():
         if this.growAxes == "Z":
             Ny = 2
         
-        pY = -P[Ny]
+        pY = int( -P[Ny] )
 
 
         if this.growSign:
@@ -550,17 +550,24 @@ class Mendel():
         maxX = dX
         minX = pX
 
-        height = width*height
+        height2 = width*height
 
-        print("Creating system..." + str(height))
+        print("Creating system..." + str(height2))
         tX1 = 0
         tX2 = 0
+        
+        foldsCount = 0
+        
         while Exito == False:
             if this.CheckMax() == False:
                 break
+            
+            if foldsCount >= abs(height):
+                Exito = True
+            
             C = this.prevBP.getXYZ()
             CX = C[0]
-            CY = -C[Ny]
+            CY = int(-C[Ny])
 
             minX = min(minX,CX)
             maxX = max(maxX,CX)
@@ -582,6 +589,7 @@ class Mendel():
                     if CY == dY:
                         Exito = True
                     else:
+                        foldsCount += 1
                         if this.growAxes == "Y":
                             this.AddTurn_Y_down()
                         else:
@@ -594,17 +602,21 @@ class Mendel():
                     if CY == dY:
                         Exito = True
                     else:
+                        foldsCount += 1
                         if this.growAxes == "Y":
                             this.AddTurn_Y_down()
                         else:
                             this.AddTurn_Z_down()
 
+            
+        
         if oz == 0 or oz == 360:
             this.GotoX(maxX-this.bp2end)
         else:
             this.GotoX(minX+this.bp2end)
 
         this.bp2end = 0
+        
         
     def AddRect_old_latest(this, width , height) :
         ### Adds a rectangule forward with an specific size
@@ -768,7 +780,7 @@ class Mendel():
         if this.growAxes == "Z":
             Ny = 2
         
-        pY = P[Ny]
+        pY = int(P[Ny])
         
 
         if this.growSign:
@@ -790,15 +802,21 @@ class Mendel():
         print("Creating system..." + str(height))
         tX1 = 0
         tX2 = 0
+        
+        foldsCount = 0
+        
+        
         while Exito == False:
             
             if this.CheckMax() == False:
                 break
             
+            if foldsCount >= height:
+                Exito = True
             
             C = this.prevBP.getXYZ()
             CX = C[0]
-            CY = C[Ny]
+            CY = int(C[Ny])
 
             minX = min(minX,CX)
             maxX = max(maxX,CX)
@@ -821,6 +839,7 @@ class Mendel():
                     if CY == dY:
                         Exito = True
                     else:
+                        foldsCount += 1
                         if this.growAxes == "Y":
                             this.AddTurn_Y_up()
                         else:
@@ -834,13 +853,15 @@ class Mendel():
                     if CY == dY:
                         Exito = True
                     else:
+                        foldsCount += 1
                         if this.growAxes == "Y":
                             this.AddTurn_Y_up()         
                         else:
                             this.AddTurn_Z_up()
             
             
-        
+            
+            
         if oz == 0 or oz == 360:
             this.GotoX(maxX - this.bp2end)
         else:
@@ -857,6 +878,7 @@ class Mendel():
         K.setId(this.c_id)
         this.c_id = this.c_id+1
         K.setMode(this.mode)
+        K.HCSet = this.HCSet
 
         
         
@@ -1330,6 +1352,9 @@ class Mendel():
         
         newtarget = 0
         
+        prevHCSet = this.HCSet
+        
+        
         ## Control Variables:
         print(this.prevAngle)  ## Honeycomb angle
         print(this.CurrentSense) ## Square reference
@@ -1382,7 +1407,13 @@ class Mendel():
         print("Doing H turn, Angle " + str( this.GetXAngle()) + " -> " + str(testAng))
         
         while testAng > 2: ## Honeycomb has exact angles
+            tHCSet = this.HCSet
+            this.HCSet = prevHCSet
+            
             this.AddBP()
+            
+            this.HCSet = tHCSet
+            
             #bpy.ops.wm.redraw_timer(type='DRAW_WIN_SWAP', iterations=1) 
             lastAng = this.GetXAngle() 
             
@@ -1504,8 +1535,8 @@ class Mendel():
             if this.minX < 0 or this.minY > 0 or this.minZ < 0:
                 print("Compensating coordinates")
                 ### Compensate
-                sY = - this.minY*2
-                sZ = - this.minZ*2
+                sY = int(- this.minY)*2
+                sZ = int(- this.minZ)*2
 
                 ### X should be increased in terms of the angle: 21 bp
                 ### that is, if x = -1, should be 19
@@ -1518,6 +1549,7 @@ class Mendel():
 
             this.HelCad = HelixCad()
             this.HelCad.SetParallel(this.Parallel)
+            this.HelCad.Lattice = this.Lattice
             #this.HelCad.setLast(this.prevBP)
             
             this.prevSize = len(this.Elements)

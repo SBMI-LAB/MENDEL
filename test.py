@@ -11,18 +11,22 @@ from Mendel import Mendel
 
 
 Cad = Mendel()
-Cad.setCadnanoBpTurn()
-
+#Cad.setCadnanoBpTurn()
 Cad.setDraft()
-
-#Cad.SetHoneyComb()
-
-Cad.Add(100)
-#Cad.DownY()
+Cad.SetHoneyComb()
 
 
-Cad.SetSkips()
+#Cad.RectUp(20,4)
+Cad.Add(10)
+Cad.UpY()
+Cad.Add(10)
+Cad.UpY()
+Cad.Add(10)
+#Cad.UpY()
+#Cad.Add(10)
 
+
+Cad.writeCadnano("/tmp/test.json")
 #Cad.RenderRibbons()
 Cad.Stats()
 

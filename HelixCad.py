@@ -13,6 +13,8 @@ import math
 class HelixCad():
     filename = "output.json"
     
+    Lattice="Square" 
+    
     Parallel = False
 
     Last = None
@@ -49,7 +51,11 @@ class HelixCad():
             if this.maxPosition < pX[0]:
                 this.maxPosition = round(pX[0])+10
         
-        this.maxPosition = math.ceil(this.maxPosition/32)*32-1  ### Adjustment
+        if this.Lattice == "Square":
+            this.maxPosition = math.ceil(this.maxPosition/32)*32-1  ### Adjustment
+        else:
+            this.maxPosition = math.ceil(this.maxPosition/42)*42-1  ### Adjustment
+            
         print("Total of " + str(k) + " elements")
         print("Max positions X: " + str(this.maxPosition))        
 
@@ -883,7 +889,10 @@ class HelixCad():
         print("Total of " + str(k) + " elements")
         
         
-        this.maxPosition = math.ceil(this.maxPosition/32)*32
+        if this.Lattice == "Square":
+            this.maxPosition = math.ceil(this.maxPosition/32)*32
+        else:
+            this.maxPosition = math.ceil(this.maxPosition/42)*42
         
         print("Max positions X: " + str(this.maxPosition))
         
@@ -916,12 +925,16 @@ class HelixCad():
                 pos = 0
                 hel = HelixRod()
                 this.Helices.append(hel)
+                hel.Lattice = this.Lattice
                 hel.setRow(rows)
                 for BP in rows:
                     if type(BP) != type([]):
                         BP.setRod(rod,pos)
                         V = BP.getXYZCenter()
-                        x,y,z=round(V[0]),round(V[1]/2),round(V[2]/2)
+                        if this.Lattice == "Square":
+                            x,y,z=round(V[0]),round(V[1]/2),round(V[2]/2)
+                        else:
+                            x,y,z = BP.hx, BP.hy, BP.hz
                         y = -y
                         hel.config(y,z)
                         
@@ -999,7 +1012,8 @@ class HelixCad():
     def addBP(this, BP):
         #print("Adding BP")
         V = BP.getXYZCenter()
-        x,y,z=round(V[0]),round(V[1]/2),round(V[2]/2)
+#        x,y,z=round(V[0]),round(V[1]/2),round(V[2]/2)
+        x,y,z = int(BP.x), int(BP.y), int(BP.z)
         y = -y
         # so far, only x,y,z can be positive
         if x<0 or y<0 or z<0 :
@@ -1049,7 +1063,10 @@ class HelixCad():
             
             # here add the BP
             
-            #print("x: " + str(x)  + ", maxP: " + str(this.maxPosition) + ", row: " + str(len(row)))
+            print("x: " + str(x)  + ", maxP: " + str(this.maxPosition) + ", row: " + str(len(row)))
+            
+            
+            
             
             if type(row[x]) != type(BP):
                 row[x]=BP

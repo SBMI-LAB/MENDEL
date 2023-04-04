@@ -24,6 +24,8 @@ class HelixRod():
     
     Neighbors = 0
     
+    Lattice = "Square"
+    
 
     
     y = 0
